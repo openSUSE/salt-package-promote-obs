@@ -17,6 +17,7 @@ pipeline {
     stages {
         stage('Promote Salt testing packages') {
             steps {
+                echo 'Promote Salt testing packages from "products:testing" to "products"'
                 osc copypac systemsmanagement:saltstack:products:testing salt systemsmanagement:saltstack:products
                 osc copypac systemsmanagement:saltstack:products:testing py26-compat-salt systemsmanagement:saltstack:products
                 osc copypac systemsmanagement:saltstack:products:testing py26-compat-tornado systemsmanagement:saltstack:products
@@ -28,6 +29,7 @@ pipeline {
 
         stage('Run services for Uyuni-Client-Tools Salt packages') {
             steps {
+                echo 'Run services for Uyuni-Client-Tools Salt packages'
                 osc service remoterun systemsmanagement:Uyuni:Master:Ubuntu1604-Uyuni-Client-Tools salt
                 osc service remoterun systemsmanagement:Uyuni:Master:Ubuntu1804-Uyuni-Client-Tools salt
             }
@@ -35,6 +37,7 @@ pipeline {
 
         stage('Run services for SUSE-Manager-Tools Salt packages') {
             steps {
+                echo 'Run services for SUSE-Manager-Tools Salt packages'
                 osc -A https://api.suse.de service remoterun Devel:Galaxy:Manager:${params.manager_tools_source_version}:Ubuntu16.04-SUSE-Manager-Tools salt
                 osc -A https://api.suse.de service remoterun Devel:Galaxy:Manager:${params.manager_tools_source_version}:Ubuntu18.04-SUSE-Manager-Tools salt
                 osc -A https://api.suse.de service remoterun Devel:Galaxy:Manager:Head:Ubuntu16.04-SUSE-Manager-Tools salt

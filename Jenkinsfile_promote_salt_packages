@@ -18,12 +18,12 @@ pipeline {
         stage('Promote Salt testing packages') {
             steps {
                 echo 'Promote Salt testing packages from "products:testing" to "products"'
-                'osc copypac systemsmanagement:saltstack:products:testing salt systemsmanagement:saltstack:products'
-                'osc copypac systemsmanagement:saltstack:products:testing py26-compat-salt systemsmanagement:saltstack:products'
-                'osc copypac systemsmanagement:saltstack:products:testing py26-compat-tornado systemsmanagement:saltstack:products'
-                'osc copypac systemsmanagement:saltstack:products:testing py26-compat-msgpack-python systemsmanagement:saltstack:products'
-                'osc copypac systemsmanagement:saltstack:products:old:testing salt systemsmanagement:saltstack:products:old'
-                'osc service remoterun systemsmanagement:saltstack:products:debian salt'
+                sh 'osc copypac systemsmanagement:saltstack:products:testing salt systemsmanagement:saltstack:products'
+                sh 'osc copypac systemsmanagement:saltstack:products:testing py26-compat-salt systemsmanagement:saltstack:products'
+                sh 'osc copypac systemsmanagement:saltstack:products:testing py26-compat-tornado systemsmanagement:saltstack:products'
+                sh 'osc copypac systemsmanagement:saltstack:products:testing py26-compat-msgpack-python systemsmanagement:saltstack:products'
+                sh 'osc copypac systemsmanagement:saltstack:products:old:testing salt systemsmanagement:saltstack:products:old'
+                sh 'osc service remoterun systemsmanagement:saltstack:products:debian salt'
             }
         }
 

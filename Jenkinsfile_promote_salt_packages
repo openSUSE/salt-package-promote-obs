@@ -12,7 +12,7 @@ pipeline {
         string(defaultValue: '4.0', description: 'Source for different "SUSE-Manager-Tools" packages', name: 'manager_tools_source_version')
     }
 
-    agent { label 'toaster-node' }
+    agent { label 'manager-jenkins-node' }
 
     stages {
         stage('Promote Salt testing packages') {

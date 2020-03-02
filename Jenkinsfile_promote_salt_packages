@@ -9,12 +9,22 @@ properties([
 pipeline {
 
     parameters {
-        string(defaultValue: '4.0', description: 'Source for different "SUSE-Manager-Tools" packages', name: 'manager_tools_source_version')
+        string(defaultValue: '4.0', description: 'Source for different "SUSE-Manager-Tools" packages', name: 'manager_tools_source_version'),
+        string(defaultValue: '', description: 'Maintenance Update version (i.a. 4.0.5)', name: 'mu_version')
     }
 
     agent { label 'manager-jenkins-node' }
 
     stages {
+        stage('Previous checks') {
+            steps {
+                echo "Check if 'openSUSE-${mu_version}' branch exists at https://github.com/openSUSE/salt"
+                sh "curl -I --fail https://codeload.github.com/openSUSE/salt/tar.gz/openSUSE-MU-${mu_version}"
+                echo "Check that MU branches are set on 'products:debian'"
+                sh "curl https://build.opensuse.org/package/view_file/systemsmanagement:saltstack:products:debian/salt/_service?expand=1 | grep MU-${mu_version}"
+            }
+        }
+
         stage('Promote Salt testing packages') {
             steps {
                 echo 'Promote Salt testing packages from "products:testing" to "products"'

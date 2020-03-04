@@ -18,7 +18,7 @@ pipeline {
     stages {
         stage('Previous checks') {
             steps {
-                echo "Check if 'openSUSE-${mu_version}' branch exists at https://github.com/openSUSE/salt"
+                echo "Check if 'openSUSE-MU-${mu_version}' branch exists at https://github.com/openSUSE/salt"
                 sh "curl -I --fail https://codeload.github.com/openSUSE/salt/tar.gz/openSUSE-MU-${mu_version}"
                 echo "Check that MU branches are set on 'products:debian'"
                 sh "curl https://build.opensuse.org/package/view_file/systemsmanagement:saltstack:products:debian/salt/_service?expand=1 | grep MU-${mu_version}"

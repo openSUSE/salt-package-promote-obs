@@ -20,8 +20,9 @@ pipeline {
             steps {
                 echo "Check if 'openSUSE-MU-${mu_version}' branch exists at https://github.com/openSUSE/salt"
                 sh "curl -I --fail https://codeload.github.com/openSUSE/salt/tar.gz/openSUSE-MU-${mu_version}"
-                echo "Check that MU branches are set on 'products:debian'"
-                sh "curl https://build.opensuse.org/package/view_file/systemsmanagement:saltstack:products:debian/salt/_service?expand=1 | grep MU-${mu_version}"
+                echo "Check that MU branches are set on 'products:debian:python2' and 'products:debian:python3'"
+                sh "curl https://build.opensuse.org/package/view_file/systemsmanagement:saltstack:products:debian:python2/salt/_service?expand=1 | grep MU-${mu_version}"
+                sh "curl https://build.opensuse.org/package/view_file/systemsmanagement:saltstack:products:debian:python3/salt/_service?expand=1 | grep MU-${mu_version}"
             }
         }
 
@@ -33,8 +34,10 @@ pipeline {
                 sh "osc copypac systemsmanagement:saltstack:products:testing py26-compat-tornado systemsmanagement:saltstack:products"
                 sh "osc copypac systemsmanagement:saltstack:products:testing py26-compat-msgpack-python systemsmanagement:saltstack:products"
                 sh "osc copypac systemsmanagement:saltstack:products:old:testing salt systemsmanagement:saltstack:products:old"
-                sh "osc service remoterun systemsmanagement:saltstack:products:debian salt"
-                sh "osc service wait systemsmanagement:saltstack:products:debian salt"
+                sh "osc service remoterun systemsmanagement:saltstack:products:debian:python2 salt"
+                sh "osc service wait systemsmanagement:saltstack:products:debian:python2 salt"
+                sh "osc service remoterun systemsmanagement:saltstack:products:debian:python3 salt"
+                sh "osc service wait systemsmanagement:saltstack:products:debian:python3 salt"
             }
         }
 

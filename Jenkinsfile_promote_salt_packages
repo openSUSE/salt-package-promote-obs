@@ -49,6 +49,7 @@ pipeline {
                 echo 'Run services for Uyuni-Client-Tools Salt packages'
                 sh "osc service remoterun systemsmanagement:Uyuni:Master:Ubuntu1604-Uyuni-Client-Tools salt"
                 sh "osc service remoterun systemsmanagement:Uyuni:Master:Ubuntu1804-Uyuni-Client-Tools salt"
+                sh "osc service remoterun systemsmanagement:Uyuni:Master:Ubuntu2004-Uyuni-Client-Tools salt"
             }
         }
 
@@ -59,6 +60,7 @@ pipeline {
                 sh "osc -A https://api.suse.de service remoterun Devel:Galaxy:Manager:${params.manager_tools_source_version}:Ubuntu18.04-SUSE-Manager-Tools salt"
                 sh "osc -A https://api.suse.de service remoterun Devel:Galaxy:Manager:Head:Ubuntu16.04-SUSE-Manager-Tools salt"
                 sh "osc -A https://api.suse.de service remoterun Devel:Galaxy:Manager:Head:Ubuntu18.04-SUSE-Manager-Tools salt"
+                sh "osc -A https://api.suse.de service remoterun Devel:Galaxy:Manager:Head:Ubuntu20.04-SUSE-Manager-Tools salt"
             }
         }
     }

@@ -56,6 +56,8 @@ pipeline {
         stage('Run services for SUSE-Manager-Tools Salt packages') {
             steps {
                 echo 'Run services for SUSE-Manager-Tools Salt packages'
+//              sh "osc -A https://api.suse.de service remoterun Devel:Galaxy:Manager:${params.manager_tools_source_version}:Ubuntu16.04-SUSE-Manager-Tools salt"
+//              sh "osc -A https://api.suse.de service remoterun Devel:Galaxy:Manager:${params.manager_tools_source_version}:Ubuntu18.04-SUSE-Manager-Tools salt"
                 sh "osc -A https://api.suse.de service remoterun Devel:Galaxy:Manager:Head:Ubuntu16.04-SUSE-Manager-Tools salt"
                 sh "osc -A https://api.suse.de service remoterun Devel:Galaxy:Manager:Head:Ubuntu18.04-SUSE-Manager-Tools salt"
                 sh "osc -A https://api.suse.de service remoterun Devel:Galaxy:Manager:Head:Ubuntu20.04-SUSE-Manager-Tools salt"

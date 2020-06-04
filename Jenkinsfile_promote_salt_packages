@@ -9,7 +9,7 @@ properties([
 pipeline {
 
     parameters {
-        string(defaultValue: '4.0', description: 'Source for different "SUSE-Manager-Tools" packages', name: 'manager_tools_source_version')
+        string(defaultValue: '4.1', description: 'Source for different "SUSE-Manager-Tools" packages', name: 'manager_tools_source_version')
         string(defaultValue: '', description: 'Maintenance Update version (i.a. 4.0.5)', name: 'mu_version')
     }
 
@@ -58,6 +58,7 @@ pipeline {
                 echo 'Run services for SUSE-Manager-Tools Salt packages'
                 sh "osc -A https://api.suse.de service remoterun Devel:Galaxy:Manager:${params.manager_tools_source_version}:Ubuntu16.04-SUSE-Manager-Tools salt"
                 sh "osc -A https://api.suse.de service remoterun Devel:Galaxy:Manager:${params.manager_tools_source_version}:Ubuntu18.04-SUSE-Manager-Tools salt"
+                sh "osc -A https://api.suse.de service remoterun Devel:Galaxy:Manager:${params.manager_tools_source_version}:Ubuntu20.04-SUSE-Manager-Tools salt"
                 sh "osc -A https://api.suse.de service remoterun Devel:Galaxy:Manager:Head:Ubuntu16.04-SUSE-Manager-Tools salt"
                 sh "osc -A https://api.suse.de service remoterun Devel:Galaxy:Manager:Head:Ubuntu18.04-SUSE-Manager-Tools salt"
                 sh "osc -A https://api.suse.de service remoterun Devel:Galaxy:Manager:Head:Ubuntu20.04-SUSE-Manager-Tools salt"

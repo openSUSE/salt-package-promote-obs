@@ -35,12 +35,14 @@ pipeline {
                 sh "osc copypac systemsmanagement:saltstack:products:testing py26-compat-tornado systemsmanagement:saltstack:products"
                 sh "osc copypac systemsmanagement:saltstack:products:testing py26-compat-msgpack-python systemsmanagement:saltstack:products"
                 sh "osc copypac systemsmanagement:saltstack:products:old:testing salt systemsmanagement:saltstack:products:old"
-                sh "osc service remoterun systemsmanagement:saltstack:products:debian salt"
-                sh "osc service wait systemsmanagement:saltstack:products:debian salt"
-                sh "osc service remoterun systemsmanagement:saltstack:products:debian:python2 salt"
-                sh "osc service wait systemsmanagement:saltstack:products:debian:python2 salt"
-                sh "osc service remoterun systemsmanagement:saltstack:products:debian:python3 salt"
-                sh "osc service wait systemsmanagement:saltstack:products:debian:python3 salt"
+            }
+        }
+
+        stage('Promote Salt debian testing packages') {
+            steps {
+                sh "osc copypac systemsmanagement:saltstack:products:testing:debian salt systemsmanagement:saltstack:products:debian"
+                sh "osc copypac systemsmanagement:saltstack:products:testing:debian:python2 salt systemsmanagement:saltstack:products:debian:python2"
+                sh "osc copypac systemsmanagement:saltstack:products:testing:debian:python3 salt systemsmanagement:saltstack:products:debian:python3"
             }
         }
 

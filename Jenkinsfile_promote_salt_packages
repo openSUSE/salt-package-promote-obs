@@ -9,7 +9,7 @@ properties([
 pipeline {
 
     parameters {
-        string(defaultValue: '4.1', description: 'Source for different "SUSE-Manager-Tools" packages', name: 'manager_tools_source_version')
+        string(defaultValue: '3000', description: 'Version of the Salt package', name: 'salt_version')
         string(defaultValue: '', description: 'Maintenance Update version (i.a. 4.0.5)', name: 'mu_version')
     }
 

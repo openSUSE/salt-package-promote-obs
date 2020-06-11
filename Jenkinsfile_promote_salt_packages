@@ -71,9 +71,6 @@ pipeline {
 						echo 'Promote "products:testing:debian" package'
 						sh "osc copypac systemsmanagement:saltstack:products:testing:debian salt systemsmanagement:saltstack:products:debian"
 
-						echo 'Fix package link at promoted "products:debian" package'
-						sh "osc linkpac systemsmanagement:saltstack:products salt systemsmanagement:saltstack:products:debian -f"
-
 						echo 'Re-enable services in "products:testing:debian"'
 						sh "cp _service.backup _service"
 						sh "osc rm salt_${salt_version}.orig.tar.gz"
@@ -94,9 +91,6 @@ pipeline {
 
 						echo 'Promote "products:testing:debian:python2" package'
 						sh "osc copypac systemsmanagement:saltstack:products:testing:debian:python2 salt systemsmanagement:saltstack:products:debian:python2"
-
-						echo 'Fix package link at promoted "products:debian:python2" package'
-						sh "osc linkpac systemsmanagement:saltstack:products salt systemsmanagement:saltstack:products:debian:python2 -f"
 
 						echo 'Re-enable services in "products:testing:debian:python2"'
 						sh "cp _service.backup _service"
@@ -119,9 +113,6 @@ pipeline {
 						echo 'Promote "products:testing:debian:python3" package'
 						sh "osc copypac systemsmanagement:saltstack:products:testing:debian:python3 salt systemsmanagement:saltstack:products:debian:python3"
 
-						echo 'Fix package link at promoted "products:debian:python3" package'
-						sh "osc linkpac systemsmanagement:saltstack:products salt systemsmanagement:saltstack:products:debian:python3 -f"
-
 						echo 'Re-enable services in "products:testing:debian:python3"'
 						sh "cp _service.backup _service"
 						sh "osc rm salt_${salt_version}.orig.tar.gz"
@@ -135,6 +126,12 @@ pipeline {
 
 	post {
 		always {
+			echo 'Fix package link at promoted "products:debian" package'
+			sh "osc linkpac systemsmanagement:saltstack:products salt systemsmanagement:saltstack:products:debian -f"
+			echo 'Fix package link at promoted "products:debian:python2" package'
+			sh "osc linkpac systemsmanagement:saltstack:products salt systemsmanagement:saltstack:products:debian:python2 -f"
+			echo 'Fix package link at promoted "products:debian:python3" package'
+			sh "osc linkpac systemsmanagement:saltstack:products salt systemsmanagement:saltstack:products:debian:python3 -f"
 			echo 'Remove OBS environment at /tmp/salt-promote-pipeline-env'
 			sh "rm /tmp/salt-promote-pipeline-env -rf || true"
 		}

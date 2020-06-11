@@ -22,7 +22,7 @@ pipeline {
                 sh "curl -I --fail https://codeload.github.com/openSUSE/salt/tar.gz/openSUSE-MU-${mu_version}"
 
                 echo "Check if 'MU-${mu_version}' branch exists at https://github.com/openSUSE/salt-packaging"
-                sh "curl -I --fail https://codeload.github.com/salt-packaging/salt/tar.gz/MU-${mu_version}"
+                sh "curl -I --fail https://codeload.github.com/openSUSE/salt-packaging/tar.gz/MU-${mu_version}"
 
                 echo "Check that 'products:testing', 'products:testing:debian', 'products:testing:debian:python2' and 'products:testing:debian:python3' are not set to MU branches"
                 sh "! curl https://build.opensuse.org/package/view_file/systemsmanagement:saltstack:products:testing/salt/_service?expand=1 | grep MU-${mu_version}"

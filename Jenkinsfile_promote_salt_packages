@@ -134,13 +134,13 @@ pipeline {
                 sh "rm systemsmanagement:saltstack:products:testing:debian:python3/salt -rf"
             }
         }
+    }
 
-        post {
-            always {
-                echo 'Remove OBS environment at /tmp/salt-promote-pipeline-env'
-                sh "rm /tmp/salt-promote-pipeline-env -rf || true"
-            }
-        }
+	post {
+		always {
+			echo 'Remove OBS environment at /tmp/salt-promote-pipeline-env'
+			sh "rm /tmp/salt-promote-pipeline-env -rf || true"
+		}
     }
 
 }

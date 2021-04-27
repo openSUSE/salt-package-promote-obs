@@ -9,8 +9,8 @@ properties([
 pipeline {
 
     parameters {
-        string(defaultValue: '3000', description: 'Salt version', name: 'salt_version')
-        string(defaultValue: '', description: 'Maintenance Update version (i.a. 4.0.5)', name: 'mu_version')
+        string(defaultValue: '3000', description: 'Salt version to promote from products:testing to products.', name: 'salt_version')
+        string(defaultValue: '', description: 'SUSE Manager maintenance update version that this Salt update is released with, e.g. 4.1.7', name: 'mu_version')
     }
 
     agent { label 'manager-jenkins-node' }

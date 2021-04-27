@@ -16,12 +16,12 @@ pipeline {
     agent { label 'manager-jenkins-node' }
 
     stages {
-        stage('Previous checks') {
+        stage('Initial Checks') {
             steps {
-                echo "Check if 'openSUSE-MU-${mu_version}' branch exists at https://github.com/openSUSE/salt"
+                echo "Check that 'openSUSE-MU-${mu_version}' branch exists at https://github.com/openSUSE/salt"
                 sh "curl -I --fail https://codeload.github.com/openSUSE/salt/tar.gz/openSUSE-MU-${mu_version}"
 
-                echo "Check if 'MU-${mu_version}' branch exists at https://github.com/openSUSE/salt-packaging"
+                echo "Check that 'MU-${mu_version}' branch exists at https://github.com/openSUSE/salt-packaging"
                 sh "curl -I --fail https://codeload.github.com/openSUSE/salt-packaging/tar.gz/MU-${mu_version}"
 
                 echo "Check that 'products:testing', 'products:testing:debian', 'products:testing:debian:python2' and 'products:testing:debian:python3' are not set to MU branches"

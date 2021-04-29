@@ -122,7 +122,7 @@ pipeline {
 
                         echo 'Execute disabled services to ensure tarball is updated in "products:3000:testing:debian:python3"'
                         sh "osc service disabledrun || true"
-                        sh "osc add salt_${salt_version}.orig.tar.gz"
+                        sh "osc add salt_3000.orig.tar.gz"
                         sh "osc commit -m 'Disable services and temporary add tarball before promoting'"
 
                         echo 'Promote "products:3000:testing:debian:python3" package'
@@ -130,7 +130,7 @@ pipeline {
 
                         echo 'Re-enable services in "products:3000:testing:debian:python3"'
                         sh "cp _service.backup _service"
-                        sh "osc rm salt_${salt_version}.orig.tar.gz"
+                        sh "osc rm salt_3000.orig.tar.gz"
                         sh "osc commit -m 'Remove tarball and disable service after promoting'"
                     }
                     sh "rm systemsmanagement:saltstack:products:3000:testing:debian:python3/salt -rf"

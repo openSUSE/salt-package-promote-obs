@@ -34,7 +34,7 @@ pipeline {
                 sh "! curl https://build.opensuse.org/package/view_file/systemsmanagement:saltstack:products:3000:testing:debian:python3/salt/_service?expand=1 | grep MU-${mu_version}"
 
                 echo "Check the source tarball is properly named to salt_${salt_version}.orig.tar.gz in 'products:testing:debian'"
-                sh "curl https://build.opensuse.org/package/view_file/systemsmanagement:saltstack:products:testing:debian/salt/_service?expand=1 | grep salt_${salt_version}.orig.tar.g"
+                sh "curl https://build.opensuse.org/package/view_file/systemsmanagement:saltstack:products:testing:debian/salt/_service?expand=0 | grep salt_${salt_version}.orig.tar.g"
             }
         }
 

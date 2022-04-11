@@ -1,0 +1,197 @@
+#!/usr/bin/env groovy
+
+// Configure the build properties
+properties([
+    buildDiscarder(logRotator(numToKeepStr: '20')),
+    disableConcurrentBuilds(),
+])
+
+pipeline {
+
+    parameters {
+        string(defaultValue: '3002.2', description: 'Salt version to promote for Salt Bundle.', name: 'salt_version')
+        string(defaultValue: '', description: 'SUSE Manager maintenance update version that this Salt Bundle update is released with, e.g. 4.2.6', name: 'mu_version')
+    }
+
+    agent { label 'manager-jenkins-node' }
+
+    stages {
+        stage('Initial Checks') {
+            steps {
+                echo "Check that 'openSUSE-MU-${mu_version}' branch exists at https://github.com/openSUSE/salt"
+                sh "curl -I --fail https://codeload.github.com/openSUSE/salt/tar.gz/openSUSE-MU-${mu_version}"
+
+                echo "Check that 'MU-${mu_version}' branch exists at https://github.com/openSUSE/salt-packaging"
+                sh "curl -I --fail https://codeload.github.com/openSUSE/salt-packaging/tar.gz/MU-${mu_version}"
+            }
+        }
+
+        stage('Promote debbuild packages for building Salt bundle') {
+            steps {
+                echo 'Promote debbuild package from "systemsmanagement:saltstack:bundle:testing:debbuild" to "systemsmanagement:saltstack:bundle:debbuild"'
+                sh "osc copypac systemsmanagement:saltstack:bundle:testing:debbuild deb-perl-macros systemsmanagement:saltstack:bundle:debbuild"
+                sh "osc copypac systemsmanagement:saltstack:bundle:testing:debbuild debbuild systemsmanagement:saltstack:bundle:debbuild"
+                sh "osc copypac systemsmanagement:saltstack:bundle:testing:debbuild debbuild-macros systemsmanagement:saltstack:bundle:debbuild"
+                sh "osc copypac systemsmanagement:saltstack:bundle:testing:debbuild lua-macros systemsmanagement:saltstack:bundle:debbuild"
+                sh "osc copypac systemsmanagement:saltstack:bundle:testing:debbuild lua51 systemsmanagement:saltstack:bundle:debbuild"
+                sh "osc copypac systemsmanagement:saltstack:bundle:testing:debbuild perl-Capture-Tiny systemsmanagement:saltstack:bundle:debbuild"
+                sh "osc copypac systemsmanagement:saltstack:bundle:testing:debbuild perl-Carp systemsmanagement:saltstack:bundle:debbuild"
+                sh "osc copypac systemsmanagement:saltstack:bundle:testing:debbuild perl-Class-Data-Inheritable systemsmanagement:saltstack:bundle:debbuild"
+                sh "osc copypac systemsmanagement:saltstack:bundle:testing:debbuild perl-Devel-StackTrace systemsmanagement:saltstack:bundle:debbuild"
+                sh "osc copypac systemsmanagement:saltstack:bundle:testing:debbuild perl-Devel-Symdump systemsmanagement:saltstack:bundle:debbuild"
+                sh "osc copypac systemsmanagement:saltstack:bundle:testing:debbuild perl-Exception-Class systemsmanagement:saltstack:bundle:debbuild"
+                sh "osc copypac systemsmanagement:saltstack:bundle:testing:debbuild perl-ExtUtils-CBuilder systemsmanagement:saltstack:bundle:debbuild"
+                sh "osc copypac systemsmanagement:saltstack:bundle:testing:debbuild perl-ExtUtils-PkgConfig systemsmanagement:saltstack:bundle:debbuild"
+                sh "osc copypac systemsmanagement:saltstack:bundle:testing:debbuild perl-File-Path systemsmanagement:saltstack:bundle:debbuild"
+                sh "osc copypac systemsmanagement:saltstack:bundle:testing:debbuild perl-File-Temp systemsmanagement:saltstack:bundle:debbuild"
+                sh "osc copypac systemsmanagement:saltstack:bundle:testing:debbuild perl-IPC-Cmd systemsmanagement:saltstack:bundle:debbuild"
+                sh "osc copypac systemsmanagement:saltstack:bundle:testing:debbuild perl-Lua-API systemsmanagement:saltstack:bundle:debbuild"
+                sh "osc copypac systemsmanagement:saltstack:bundle:testing:debbuild perl-MRO-Compat systemsmanagement:saltstack:bundle:debbuild"
+                sh "osc copypac systemsmanagement:saltstack:bundle:testing:debbuild perl-Module-Build systemsmanagement:saltstack:bundle:debbuild"
+                sh "osc copypac systemsmanagement:saltstack:bundle:testing:debbuild perl-Module-Metadata systemsmanagement:saltstack:bundle:debbuild"
+                sh "osc copypac systemsmanagement:saltstack:bundle:testing:debbuild perl-Module-Runtime systemsmanagement:saltstack:bundle:debbuild"
+                sh "osc copypac systemsmanagement:saltstack:bundle:testing:debbuild perl-Perl-OSType systemsmanagement:saltstack:bundle:debbuild"
+                sh "osc copypac systemsmanagement:saltstack:bundle:testing:debbuild perl-Pod-Coverage systemsmanagement:saltstack:bundle:debbuild"
+                sh "osc copypac systemsmanagement:saltstack:bundle:testing:debbuild perl-Sub-Uplevel systemsmanagement:saltstack:bundle:debbuild"
+                sh "osc copypac systemsmanagement:saltstack:bundle:testing:debbuild perl-Test-Class systemsmanagement:saltstack:bundle:debbuild"
+                sh "osc copypac systemsmanagement:saltstack:bundle:testing:debbuild perl-Test-Compile systemsmanagement:saltstack:bundle:debbuild"
+                sh "osc copypac systemsmanagement:saltstack:bundle:testing:debbuild perl-Test-Deep systemsmanagement:saltstack:bundle:debbuild"
+                sh "osc copypac systemsmanagement:saltstack:bundle:testing:debbuild perl-Test-Differences systemsmanagement:saltstack:bundle:debbuild"
+                sh "osc copypac systemsmanagement:saltstack:bundle:testing:debbuild perl-Test-Exception systemsmanagement:saltstack:bundle:debbuild"
+                sh "osc copypac systemsmanagement:saltstack:bundle:testing:debbuild perl-Test-Most systemsmanagement:saltstack:bundle:debbuild"
+                sh "osc copypac systemsmanagement:saltstack:bundle:testing:debbuild perl-Test-Pod systemsmanagement:saltstack:bundle:debbuild"
+                sh "osc copypac systemsmanagement:saltstack:bundle:testing:debbuild perl-Test-Pod-Coverage systemsmanagement:saltstack:bundle:debbuild"
+                sh "osc copypac systemsmanagement:saltstack:bundle:testing:debbuild perl-Test-Warn systemsmanagement:saltstack:bundle:debbuild"
+                sh "osc copypac systemsmanagement:saltstack:bundle:testing:debbuild perl-Text-Diff systemsmanagement:saltstack:bundle:debbuild"
+                sh "osc copypac systemsmanagement:saltstack:bundle:testing:debbuild perl-Try-Tiny systemsmanagement:saltstack:bundle:debbuild"
+                sh "osc copypac systemsmanagement:saltstack:bundle:testing:debbuild perl-UNIVERSAL-require systemsmanagement:saltstack:bundle:debbuild"
+                sh "osc copypac systemsmanagement:saltstack:bundle:testing:debbuild perl-parent systemsmanagement:saltstack:bundle:debbuild"
+                sh "osc copypac systemsmanagement:saltstack:bundle:testing:debbuild perl-version systemsmanagement:saltstack:bundle:debbuild"
+            }
+        }
+
+        stage('Promote Salt bundle dependencies packages') {
+            steps {
+                echo 'Promote Salt bundle dependencies packages from "systemsmanagement:saltstack:bundle:testing" to "systemsmanagement:saltstack:bundle"'
+                sh "osc copypac systemsmanagement:saltstack:bundle:testing saltbundle-libsodium systemsmanagement:saltstack:bundle"
+                sh "osc copypac systemsmanagement:saltstack:bundle:testing saltbundle-swig systemsmanagement:saltstack:bundle"
+                sh "osc copypac systemsmanagement:saltstack:bundle:testing saltbundle-zeromq systemsmanagement:saltstack:bundle"
+                sh "osc copypac systemsmanagement:saltstack:bundle:testing saltbundlepy systemsmanagement:saltstack:bundle"
+                sh "osc copypac systemsmanagement:saltstack:bundle:testing saltbundlepy-appdirs systemsmanagement:saltstack:bundle"
+                sh "osc copypac systemsmanagement:saltstack:bundle:testing saltbundlepy-asn1crypto systemsmanagement:saltstack:bundle"
+                sh "osc copypac systemsmanagement:saltstack:bundle:testing saltbundlepy-atomicwrites systemsmanagement:saltstack:bundle"
+                sh "osc copypac systemsmanagement:saltstack:bundle:testing saltbundlepy-attrs systemsmanagement:saltstack:bundle"
+                sh "osc copypac systemsmanagement:saltstack:bundle:testing saltbundlepy-bcrypt systemsmanagement:saltstack:bundle"
+                sh "osc copypac systemsmanagement:saltstack:bundle:testing saltbundlepy-certifi systemsmanagement:saltstack:bundle"
+                sh "osc copypac systemsmanagement:saltstack:bundle:testing saltbundlepy-cffi systemsmanagement:saltstack:bundle"
+                sh "osc copypac systemsmanagement:saltstack:bundle:testing saltbundlepy-chardet systemsmanagement:saltstack:bundle"
+                sh "osc copypac systemsmanagement:saltstack:bundle:testing saltbundlepy-cryptography systemsmanagement:saltstack:bundle"
+                sh "osc copypac systemsmanagement:saltstack:bundle:testing saltbundlepy-cryptography-vectors systemsmanagement:saltstack:bundle"
+                sh "osc copypac systemsmanagement:saltstack:bundle:testing saltbundlepy-cssselect systemsmanagement:saltstack:bundle"
+                sh "osc copypac systemsmanagement:saltstack:bundle:testing saltbundlepy-cython systemsmanagement:saltstack:bundle"
+                sh "osc copypac systemsmanagement:saltstack:bundle:testing saltbundlepy-distro systemsmanagement:saltstack:bundle"
+                sh "osc copypac systemsmanagement:saltstack:bundle:testing saltbundlepy-docker systemsmanagement:saltstack:bundle"
+                sh "osc copypac systemsmanagement:saltstack:bundle:testing saltbundlepy-docker-pycreds systemsmanagement:saltstack:bundle"
+                sh "osc copypac systemsmanagement:saltstack:bundle:testing saltbundlepy-docopt systemsmanagement:saltstack:bundle"
+                sh "osc copypac systemsmanagement:saltstack:bundle:testing saltbundlepy-idna systemsmanagement:saltstack:bundle"
+                sh "osc copypac systemsmanagement:saltstack:bundle:testing saltbundlepy-importlib-metadata systemsmanagement:saltstack:bundle"
+                sh "osc copypac systemsmanagement:saltstack:bundle:testing saltbundlepy-jinja2 systemsmanagement:saltstack:bundle"
+                sh "osc copypac systemsmanagement:saltstack:bundle:testing saltbundlepy-kiwi systemsmanagement:saltstack:bundle"
+                sh "osc copypac systemsmanagement:saltstack:bundle:testing saltbundlepy-lxml systemsmanagement:saltstack:bundle"
+                sh "osc copypac systemsmanagement:saltstack:bundle:testing saltbundlepy-m2crypto systemsmanagement:saltstack:bundle"
+                sh "osc copypac systemsmanagement:saltstack:bundle:testing saltbundlepy-markupsafe systemsmanagement:saltstack:bundle"
+                sh "osc copypac systemsmanagement:saltstack:bundle:testing saltbundlepy-more-itertools systemsmanagement:saltstack:bundle"
+                sh "osc copypac systemsmanagement:saltstack:bundle:testing saltbundlepy-msgpack systemsmanagement:saltstack:bundle"
+                sh "osc copypac systemsmanagement:saltstack:bundle:testing saltbundlepy-netaddr systemsmanagement:saltstack:bundle"
+                sh "osc copypac systemsmanagement:saltstack:bundle:testing saltbundlepy-packaging systemsmanagement:saltstack:bundle"
+                sh "osc copypac systemsmanagement:saltstack:bundle:testing saltbundlepy-paramiko systemsmanagement:saltstack:bundle"
+                sh "osc copypac systemsmanagement:saltstack:bundle:testing saltbundlepy-pluggy systemsmanagement:saltstack:bundle"
+                sh "osc copypac systemsmanagement:saltstack:bundle:testing saltbundlepy-psutil systemsmanagement:saltstack:bundle"
+                sh "osc copypac systemsmanagement:saltstack:bundle:testing saltbundlepy-ptyprocess systemsmanagement:saltstack:bundle"
+                sh "osc copypac systemsmanagement:saltstack:bundle:testing saltbundlepy-py systemsmanagement:saltstack:bundle"
+                sh "osc copypac systemsmanagement:saltstack:bundle:testing saltbundlepy-pyasn1 systemsmanagement:saltstack:bundle"
+                sh "osc copypac systemsmanagement:saltstack:bundle:testing saltbundlepy-pyasn1-modules systemsmanagement:saltstack:bundle"
+                sh "osc copypac systemsmanagement:saltstack:bundle:testing saltbundlepy-pycparser systemsmanagement:saltstack:bundle"
+                sh "osc copypac systemsmanagement:saltstack:bundle:testing saltbundlepy-pycurl systemsmanagement:saltstack:bundle"
+                sh "osc copypac systemsmanagement:saltstack:bundle:testing saltbundlepy-pyinotify systemsmanagement:saltstack:bundle"
+                sh "osc copypac systemsmanagement:saltstack:bundle:testing saltbundlepy-pynacl systemsmanagement:saltstack:bundle"
+                sh "osc copypac systemsmanagement:saltstack:bundle:testing saltbundlepy-pyopenssl systemsmanagement:saltstack:bundle"
+                sh "osc copypac systemsmanagement:saltstack:bundle:testing saltbundlepy-pyparsing systemsmanagement:saltstack:bundle"
+                sh "osc copypac systemsmanagement:saltstack:bundle:testing saltbundlepy-pysocks systemsmanagement:saltstack:bundle"
+                sh "osc copypac systemsmanagement:saltstack:bundle:testing saltbundlepy-pytest systemsmanagement:saltstack:bundle"
+                sh "osc copypac systemsmanagement:saltstack:bundle:testing saltbundlepy-pytz systemsmanagement:saltstack:bundle"
+                sh "osc copypac systemsmanagement:saltstack:bundle:testing saltbundlepy-pyxattr systemsmanagement:saltstack:bundle"
+                sh "osc copypac systemsmanagement:saltstack:bundle:testing saltbundlepy-pyyaml systemsmanagement:saltstack:bundle"
+                sh "osc copypac systemsmanagement:saltstack:bundle:testing saltbundlepy-pyzmq systemsmanagement:saltstack:bundle"
+                sh "osc copypac systemsmanagement:saltstack:bundle:testing saltbundlepy-requests systemsmanagement:saltstack:bundle"
+                sh "osc copypac systemsmanagement:saltstack:bundle:testing saltbundlepy-rpm-macros systemsmanagement:saltstack:bundle"
+                sh "osc copypac systemsmanagement:saltstack:bundle:testing saltbundlepy-rpm-vercmp systemsmanagement:saltstack:bundle"
+                sh "osc copypac systemsmanagement:saltstack:bundle:testing saltbundlepy-setuptools systemsmanagement:saltstack:bundle"
+                sh "osc copypac systemsmanagement:saltstack:bundle:testing saltbundlepy-setuptools-scm systemsmanagement:saltstack:bundle"
+                sh "osc copypac systemsmanagement:saltstack:bundle:testing saltbundlepy-simplejson systemsmanagement:saltstack:bundle"
+                sh "osc copypac systemsmanagement:saltstack:bundle:testing saltbundlepy-six systemsmanagement:saltstack:bundle"
+                sh "osc copypac systemsmanagement:saltstack:bundle:testing saltbundlepy-tornado systemsmanagement:saltstack:bundle"
+                sh "osc copypac systemsmanagement:saltstack:bundle:testing saltbundlepy-urllib3 systemsmanagement:saltstack:bundle"
+                sh "osc copypac systemsmanagement:saltstack:bundle:testing saltbundlepy-venvjail systemsmanagement:saltstack:bundle"
+                sh "osc copypac systemsmanagement:saltstack:bundle:testing saltbundlepy-websocket-client systemsmanagement:saltstack:bundle"
+                sh "osc copypac systemsmanagement:saltstack:bundle:testing saltbundlepy-zipp systemsmanagement:saltstack:bundle"
+                sh "osc copypac systemsmanagement:saltstack:bundle:testing saltbundlepy-zypp-plugin systemsmanagement:saltstack:bundle"
+
+                sh "echo Promote dependencies for Salt bundle in AlmaLinux8"
+                sh "osc copypac systemsmanagement:saltstack:bundle:testing:AlmaLinux8 fdupes systemsmanagement:saltstack:bundle:AlmaLinux8"
+
+                sh "echo Promote dependencies for Salt bundle in CentOS7"
+                sh "osc copypac systemsmanagement:saltstack:bundle:testing:CentOS7 fdupes systemsmanagement:saltstack:bundle:CentOS7"
+
+                sh "echo Promote dependencies for Salt bundle in CentOS8"
+                sh "echo -- nothing to promote --"
+
+                sh "echo Promote dependencies for Salt bundle in Debian9"
+                sh "osc copypac systemsmanagement:saltstack:bundle:testing:Debian9 saltbundlepy-apt systemsmanagement:saltstack:bundle:Debian9"
+
+                sh "echo Promote dependencies for Salt bundle in Debian10"
+                sh "osc copypac systemsmanagement:saltstack:bundle:testing:Debian10 saltbundlepy-apt systemsmanagement:saltstack:bundle:Debian10"
+
+                sh "echo Promote dependencies for Salt bundle in Debian11"
+                sh "osc copypac systemsmanagement:saltstack:bundle:testing:Debian11 saltbundlepy-apt systemsmanagement:saltstack:bundle:Debian11"
+
+                sh "echo Promote dependencies for Salt bundle in Fedora33"
+                sh "echo -- nothing to promote --"
+
+                sh "echo Promote dependencies for Salt bundle in Fedora34"
+                sh "echo -- nothing to promote --"
+
+                sh "echo Promote dependencies for Salt bundle in Fedora35"
+                sh "echo -- nothing to promote --"
+
+                sh "echo Promote dependencies for Salt bundle in Raspbian9"
+                sh "osc copypac systemsmanagement:saltstack:bundle:testing:Raspbian9 saltbundlepy-apt systemsmanagement:saltstack:bundle:Raspbian9"
+
+                sh "echo Promote dependencies for Salt bundle in Raspbian10"
+                sh "osc copypac systemsmanagement:saltstack:bundle:testing:Raspbian10 saltbundlepy-apt systemsmanagement:saltstack:bundle:Raspbian10"
+
+                sh "echo Promote dependencies for Salt bundle in SLE12"
+                sh "osc copypac systemsmanagement:saltstack:bundle:testing:SLE12 autoconf-archive systemsmanagement:saltstack:bundle:SLE12"
+                sh "osc copypac systemsmanagement:saltstack:bundle:testing:SLE12 saltbundle-openssl systemsmanagement:saltstack:bundle:SLE12"
+                sh "osc copypac systemsmanagement:saltstack:bundle:testing:SLE12 saltbundlepy-libvirt systemsmanagement:saltstack:bundle:SLE12"
+
+                sh "echo Promote dependencies for Salt bundle in SLE15"
+                sh "osc copypac systemsmanagement:saltstack:bundle:testing:SLE15 saltbundlepy-libvirt systemsmanagement:saltstack:bundle:SLE15"
+
+                sh "echo Promote dependencies for Salt bundle in Ubuntu1804"
+                sh "osc copypac systemsmanagement:saltstack:bundle:testing:Ubuntu1804 saltbundlepy-apt systemsmanagement:saltstack:bundle:Ubuntu1804"
+
+                sh "echo Promote dependencies for Salt bundle in Ubuntu2004"
+                sh "osc copypac systemsmanagement:saltstack:bundle:testing:Ubuntu2004 saltbundlepy-apt systemsmanagement:saltstack:bundle:Ubuntu2004"
+            }
+        }
+
+        stage('Promote Salt bundle dependencies packages') {
+            steps {
+                sh "echo Promote Salt bundle package (venv-salt-minion)"
+                sh "osc copypac systemsmanagement:saltstack:bundle:testing venv-salt-minion systemsmanagement:saltstack:bundle"
+            }
+        }
+    }
+
+}

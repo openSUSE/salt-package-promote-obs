@@ -137,58 +137,58 @@ pipeline {
                 sh "osc copypac systemsmanagement:saltstack:bundle:testing saltbundlepy-zipp systemsmanagement:saltstack:bundle"
                 sh "osc copypac systemsmanagement:saltstack:bundle:testing saltbundlepy-zypp-plugin systemsmanagement:saltstack:bundle"
 
-                sh "echo Promote dependencies for Salt bundle in AlmaLinux8"
+                echo "Promote dependencies for Salt bundle in AlmaLinux8"
                 sh "osc copypac systemsmanagement:saltstack:bundle:testing:AlmaLinux8 fdupes systemsmanagement:saltstack:bundle:AlmaLinux8"
 
-                sh "echo Promote dependencies for Salt bundle in CentOS7"
+                echo "Promote dependencies for Salt bundle in CentOS7"
                 sh "osc copypac systemsmanagement:saltstack:bundle:testing:CentOS7 fdupes systemsmanagement:saltstack:bundle:CentOS7"
 
-                sh "echo Promote dependencies for Salt bundle in CentOS8"
-                sh "echo -- nothing to promote --"
+                echo "Promote dependencies for Salt bundle in CentOS8"
+                echo "-- nothing to promote --"
 
-                sh "echo Promote dependencies for Salt bundle in Debian9"
+                echo "Promote dependencies for Salt bundle in Debian9"
                 sh "osc copypac systemsmanagement:saltstack:bundle:testing:Debian9 saltbundlepy-apt systemsmanagement:saltstack:bundle:Debian9"
 
-                sh "echo Promote dependencies for Salt bundle in Debian10"
+                echo "Promote dependencies for Salt bundle in Debian10"
                 sh "osc copypac systemsmanagement:saltstack:bundle:testing:Debian10 saltbundlepy-apt systemsmanagement:saltstack:bundle:Debian10"
 
-                sh "echo Promote dependencies for Salt bundle in Debian11"
+                echo "Promote dependencies for Salt bundle in Debian11"
                 sh "osc copypac systemsmanagement:saltstack:bundle:testing:Debian11 saltbundlepy-apt systemsmanagement:saltstack:bundle:Debian11"
 
-                sh "echo Promote dependencies for Salt bundle in Fedora33"
-                sh "echo -- nothing to promote --"
+                echo "Promote dependencies for Salt bundle in Fedora33"
+                echo "-- nothing to promote --"
 
-                sh "echo Promote dependencies for Salt bundle in Fedora34"
-                sh "echo -- nothing to promote --"
+                echo "Promote dependencies for Salt bundle in Fedora34"
+                echo "-- nothing to promote --"
 
-                sh "echo Promote dependencies for Salt bundle in Fedora35"
-                sh "echo -- nothing to promote --"
+                echo "Promote dependencies for Salt bundle in Fedora35"
+                echo "-- nothing to promote --"
 
-                sh "echo Promote dependencies for Salt bundle in Raspbian9"
+                echo "Promote dependencies for Salt bundle in Raspbian9"
                 sh "osc copypac systemsmanagement:saltstack:bundle:testing:Raspbian9 saltbundlepy-apt systemsmanagement:saltstack:bundle:Raspbian9"
 
-                sh "echo Promote dependencies for Salt bundle in Raspbian10"
+                echo "Promote dependencies for Salt bundle in Raspbian10"
                 sh "osc copypac systemsmanagement:saltstack:bundle:testing:Raspbian10 saltbundlepy-apt systemsmanagement:saltstack:bundle:Raspbian10"
 
-                sh "echo Promote dependencies for Salt bundle in SLE12"
+                echo "Promote dependencies for Salt bundle in SLE12"
                 sh "osc copypac systemsmanagement:saltstack:bundle:testing:SLE12 autoconf-archive systemsmanagement:saltstack:bundle:SLE12"
                 sh "osc copypac systemsmanagement:saltstack:bundle:testing:SLE12 saltbundle-openssl systemsmanagement:saltstack:bundle:SLE12"
                 sh "osc copypac systemsmanagement:saltstack:bundle:testing:SLE12 saltbundlepy-libvirt systemsmanagement:saltstack:bundle:SLE12"
 
-                sh "echo Promote dependencies for Salt bundle in SLE15"
+                echo "Promote dependencies for Salt bundle in SLE15"
                 sh "osc copypac systemsmanagement:saltstack:bundle:testing:SLE15 saltbundlepy-libvirt systemsmanagement:saltstack:bundle:SLE15"
 
-                sh "echo Promote dependencies for Salt bundle in Ubuntu1804"
+                echo "Promote dependencies for Salt bundle in Ubuntu1804"
                 sh "osc copypac systemsmanagement:saltstack:bundle:testing:Ubuntu1804 saltbundlepy-apt systemsmanagement:saltstack:bundle:Ubuntu1804"
 
-                sh "echo Promote dependencies for Salt bundle in Ubuntu2004"
+                echo "Promote dependencies for Salt bundle in Ubuntu2004"
                 sh "osc copypac systemsmanagement:saltstack:bundle:testing:Ubuntu2004 saltbundlepy-apt systemsmanagement:saltstack:bundle:Ubuntu2004"
             }
         }
 
-        stage('Promote Salt bundle dependencies packages') {
+        stage('Promote Salt bundle main package (venv-salt-minion)') {
             steps {
-                sh "echo Promote Salt bundle package (venv-salt-minion)"
+                echo 'Promote Salt bundle package (venv-salt-minion) from "systemsmanagement:saltstack:bundle:testing" to "systemsmanagement:saltstack:bundle"'
                 sh "osc copypac systemsmanagement:saltstack:bundle:testing venv-salt-minion systemsmanagement:saltstack:bundle"
             }
         }

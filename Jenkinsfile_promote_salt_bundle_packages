@@ -105,6 +105,7 @@ pipeline {
                 sh "osc copypac systemsmanagement:saltstack:bundle:testing saltbundlepy-netaddr systemsmanagement:saltstack:bundle"
                 sh "osc copypac systemsmanagement:saltstack:bundle:testing saltbundlepy-packaging systemsmanagement:saltstack:bundle"
                 sh "osc copypac systemsmanagement:saltstack:bundle:testing saltbundlepy-paramiko systemsmanagement:saltstack:bundle"
+                sh "osc copypac systemsmanagement:saltstack:bundle:testing saltbundlepy-pip systemsmanagement:saltstack:bundle"
                 sh "osc copypac systemsmanagement:saltstack:bundle:testing saltbundlepy-pluggy systemsmanagement:saltstack:bundle"
                 sh "osc copypac systemsmanagement:saltstack:bundle:testing saltbundlepy-psutil systemsmanagement:saltstack:bundle"
                 sh "osc copypac systemsmanagement:saltstack:bundle:testing saltbundlepy-ptyprocess systemsmanagement:saltstack:bundle"

@@ -48,6 +48,8 @@ pipeline {
             steps {
                 echo 'Promote Salt testing packages from "products:testing" to "products"'
                 sh "osc copypac systemsmanagement:saltstack:products:testing salt systemsmanagement:saltstack:products"
+                sh "osc copypac systemsmanagement:saltstack:products:testing python-contextvars systemsmanagement:saltstack:products"
+                sh "osc copypac systemsmanagement:saltstack:products:testing python-immutables systemsmanagement:saltstack:products"
                 sh "osc copypac systemsmanagement:saltstack:products:testing py26-compat-salt systemsmanagement:saltstack:products"
                 sh "osc copypac systemsmanagement:saltstack:products:testing py26-compat-tornado systemsmanagement:saltstack:products"
                 sh "osc copypac systemsmanagement:saltstack:products:testing py26-compat-msgpack-python systemsmanagement:saltstack:products"
@@ -77,8 +79,10 @@ pipeline {
                         sh "osc add salt_${salt_version}.orig.tar.gz"
                         sh "osc commit -m 'Disable services and temporary add tarball before promoting'"
 
-                        echo 'Promote "products:testing:debian" package'
+                        echo 'Promote "products:testing:debian" packages'
                         sh "osc copypac systemsmanagement:saltstack:products:testing:debian salt systemsmanagement:saltstack:products:debian"
+                        sh "osc copypac systemsmanagement:saltstack:products:testing:debian python3-contextvars systemsmanagement:saltstack:products:debian"
+                        sh "osc copypac systemsmanagement:saltstack:products:testing:debian python3-immutables systemsmanagement:saltstack:products:debian"
 
                         echo 'Re-enable services in "products:testing:debian"'
                         sh "cp _service.backup _service"

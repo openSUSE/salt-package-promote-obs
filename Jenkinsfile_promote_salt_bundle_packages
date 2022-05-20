@@ -134,6 +134,7 @@ pipeline {
                 sh "osc copypac systemsmanagement:saltstack:bundle:testing saltbundlepy-tornado systemsmanagement:saltstack:bundle"
                 sh "osc copypac systemsmanagement:saltstack:bundle:testing saltbundlepy-urllib3 systemsmanagement:saltstack:bundle"
                 sh "osc copypac systemsmanagement:saltstack:bundle:testing saltbundlepy-venvjail systemsmanagement:saltstack:bundle"
+                sh "osc copypac systemsmanagement:saltstack:bundle:testing saltbundlepy-wcwidth systemsmanagement:saltstack:bundle"
                 sh "osc copypac systemsmanagement:saltstack:bundle:testing saltbundlepy-websocket-client systemsmanagement:saltstack:bundle"
                 sh "osc copypac systemsmanagement:saltstack:bundle:testing saltbundlepy-zipp systemsmanagement:saltstack:bundle"
                 sh "osc copypac systemsmanagement:saltstack:bundle:testing saltbundlepy-zypp-plugin systemsmanagement:saltstack:bundle"
@@ -170,6 +171,15 @@ pipeline {
 
                 echo "Promote dependencies for Salt bundle in Raspbian10"
                 sh "osc copypac systemsmanagement:saltstack:bundle:testing:Raspbian10 saltbundlepy-apt systemsmanagement:saltstack:bundle:Raspbian10"
+
+                echo "Promote dependencies for Salt bundle in Raspbian11"
+                sh "osc copypac systemsmanagement:saltstack:bundle:testing:Raspbian11 saltbundlepy-apt systemsmanagement:saltstack:bundle:Raspbian11"
+
+                echo "Promote dependencies for Salt bundle in openSUSE Leap 15"
+                sh "osc copypac systemsmanagement:saltstack:bundle:testing:openSUSE_Leap_15 saltbundlepy-libvirt systemsmanagement:saltstack:bundle:openSUSE_Leap_15"
+
+                echo "Promote dependencies for Salt bundle in openSUSE Tumbleweed"
+                sh "osc copypac systemsmanagement:saltstack:bundle:testing:openSUSE_Tumbleweed saltbundlepy-libvirt systemsmanagement:saltstack:bundle:openSUSE_Tumbleweed"
 
                 echo "Promote dependencies for Salt bundle in SLE12"
                 sh "osc copypac systemsmanagement:saltstack:bundle:testing:SLE12 autoconf-archive systemsmanagement:saltstack:bundle:SLE12"

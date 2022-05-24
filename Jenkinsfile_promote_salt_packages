@@ -49,7 +49,9 @@ pipeline {
                 echo 'Promote Salt testing packages from "products:testing" to "products"'
                 sh "osc copypac systemsmanagement:saltstack:products:testing salt systemsmanagement:saltstack:products"
                 sh "osc copypac systemsmanagement:saltstack:products:testing python-contextvars systemsmanagement:saltstack:products"
+                sh "osc copypac systemsmanagement:saltstack:products:testing python3-contextvars systemsmanagement:saltstack:products"
                 sh "osc copypac systemsmanagement:saltstack:products:testing python-immutables systemsmanagement:saltstack:products"
+                sh "osc copypac systemsmanagement:saltstack:products:testing python3-immutables systemsmanagement:saltstack:products"
                 sh "osc copypac systemsmanagement:saltstack:products:testing py26-compat-salt systemsmanagement:saltstack:products"
                 sh "osc copypac systemsmanagement:saltstack:products:testing py26-compat-tornado systemsmanagement:saltstack:products"
                 sh "osc copypac systemsmanagement:saltstack:products:testing py26-compat-msgpack-python systemsmanagement:saltstack:products"

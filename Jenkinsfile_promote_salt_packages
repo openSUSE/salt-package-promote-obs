@@ -85,6 +85,7 @@ pipeline {
                         sh "osc copypac systemsmanagement:saltstack:products:testing:debian salt systemsmanagement:saltstack:products:debian"
                         sh "osc copypac systemsmanagement:saltstack:products:testing:debian python3-contextvars systemsmanagement:saltstack:products:debian"
                         sh "osc copypac systemsmanagement:saltstack:products:testing:debian python3-immutables systemsmanagement:saltstack:products:debian"
+                        sh "osc copypac systemsmanagement:saltstack:products:testing:debian python3-zmq systemsmanagement:saltstack:products:debian"
 
                         echo 'Re-enable services in "products:testing:debian"'
                         sh "cp _service.backup _service"

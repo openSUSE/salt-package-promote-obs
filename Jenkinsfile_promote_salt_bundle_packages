@@ -199,6 +199,67 @@ pipeline {
             }
         }
 
+        stage('Promote Project Configs for Salt bundle subprojects') {
+            steps {
+                echo "Promote project config for debbuild subproject"
+                sh "osc meta prjconf systemsmanagement:saltstack:bundle:testing:debbuild | osc meta prjconf --file='-' systemsmanagement:saltstack:bundle:debbuild"
+
+                echo "Promote project config for AlmaLinux8 subproject"
+                sh "osc meta prjconf systemsmanagement:saltstack:bundle:testing:AlmaLinux8 | osc meta prjconf --file='-' systemsmanagement:saltstack:bundle:AlmaLinux8"
+
+                echo "Promote project config for CentOS7 subproject"
+                sh "osc meta prjconf systemsmanagement:saltstack:bundle:testing:CentOS7 | osc meta prjconf --file='-' systemsmanagement:saltstack:bundle:CentOS7"
+
+                echo "Promote project config for CentOS8 subproject"
+                sh "osc meta prjconf systemsmanagement:saltstack:bundle:testing:CentOS8 | osc meta prjconf --file='-' systemsmanagement:saltstack:bundle:CentOS8"
+
+                echo "Promote project config for Debian9 subproject"
+                sh "osc meta prjconf systemsmanagement:saltstack:bundle:testing:Debian9 | osc meta prjconf --file='-' systemsmanagement:saltstack:bundle:Debian9"
+
+                echo "Promote project config for Debian10 subproject"
+                sh "osc meta prjconf systemsmanagement:saltstack:bundle:testing:Debian10 | osc meta prjconf --file='-' systemsmanagement:saltstack:bundle:Debian10"
+
+                echo "Promote project config for Debian11 subproject"
+                sh "osc meta prjconf systemsmanagement:saltstack:bundle:testing:Debian11 | osc meta prjconf --file='-' systemsmanagement:saltstack:bundle:Debian11"
+
+                echo "Promote project config for Fedora33 subproject"
+                sh "osc meta prjconf systemsmanagement:saltstack:bundle:testing:Fedora33 | osc meta prjconf --file='-' systemsmanagement:saltstack:bundle:Fedora33"
+
+                echo "Promote project config for Fedora34 subproject"
+                sh "osc meta prjconf systemsmanagement:saltstack:bundle:testing:Fedora34 | osc meta prjconf --file='-' systemsmanagement:saltstack:bundle:Fedora34"
+
+                echo "Promote project config for Fedora35 subproject"
+                sh "osc meta prjconf systemsmanagement:saltstack:bundle:testing:Fedora35 | osc meta prjconf --file='-' systemsmanagement:saltstack:bundle:Fedora35"
+
+                echo "Promote project config for Raspbian9 subproject"
+                sh "osc meta prjconf systemsmanagement:saltstack:bundle:testing:Raspbian9 | osc meta prjconf --file='-' systemsmanagement:saltstack:bundle:Raspbian9"
+
+                echo "Promote project config for Raspbian10 subproject"
+                sh "osc meta prjconf systemsmanagement:saltstack:bundle:testing:Raspbian10 | osc meta prjconf --file='-' systemsmanagement:saltstack:bundle:Raspbian10"
+
+                echo "Promote project config for Raspbian11 subproject"
+                sh "osc meta prjconf systemsmanagement:saltstack:bundle:testing:Raspbian11 | osc meta prjconf --file='-' systemsmanagement:saltstack:bundle:Raspbian11"
+
+                echo "Promote project config for openSUSE Leap 15 subproject"
+                sh "osc meta prjconf systemsmanagement:saltstack:bundle:testing:openSUSE_Leap_15 | osc meta prjconf --file='-' systemsmanagement:saltstack:bundle:openSUSE_Leap_15"
+
+                echo "Promote project config for openSUSE Tumbleweed subproject"
+                sh "osc meta prjconf systemsmanagement:saltstack:bundle:testing:openSUSE_Tumbleweed | osc meta prjconf --file='-' systemsmanagement:saltstack:bundle:openSUSE_Tumbleweed"
+
+                echo "Promote project config for SLE12 subproject"
+                sh "osc meta prjconf systemsmanagement:saltstack:bundle:testing:SLE12 | osc meta prjconf --file='-' systemsmanagement:saltstack:bundle:SLE12"
+
+                echo "Promote project config for SLE15 subproject"
+                sh "osc meta prjconf systemsmanagement:saltstack:bundle:testing:SLE15 | osc meta prjconf --file='-' systemsmanagement:saltstack:bundle:SLE15"
+
+                echo "Promote project config for Ubuntu1804 subproject"
+                sh "osc meta prjconf systemsmanagement:saltstack:bundle:testing:Ubuntu1804 | osc meta prjconf --file='-' systemsmanagement:saltstack:bundle:Ubuntu1804"
+
+                echo "Promote project config for Ubuntu2004 subproject"
+                sh "osc meta prjconf systemsmanagement:saltstack:bundle:testing:Ubuntu2004 | osc meta prjconf --file='-' systemsmanagement:saltstack:bundle:Ubuntu2004"
+            }
+        }
+
         stage('Promote Salt bundle main package (venv-salt-minion)') {
             steps {
                 echo 'Promote Salt bundle package (venv-salt-minion) from "systemsmanagement:saltstack:bundle:testing" to "systemsmanagement:saltstack:bundle"'

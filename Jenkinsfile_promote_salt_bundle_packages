@@ -9,7 +9,6 @@ properties([
 pipeline {
 
     parameters {
-        string(defaultValue: '3002.2', description: 'Salt version to promote for Salt Bundle.', name: 'salt_version')
         string(defaultValue: '', description: 'SUSE Manager maintenance update version that this Salt Bundle update is released with, e.g. 4.2.6', name: 'mu_version')
     }
 
@@ -194,6 +193,9 @@ pipeline {
 
                 echo "Promote dependencies for Salt bundle in Ubuntu2004"
                 sh "osc copypac systemsmanagement:saltstack:bundle:testing:Ubuntu2004 saltbundlepy-apt systemsmanagement:saltstack:bundle:Ubuntu2004"
+
+                echo "Promote dependencies for Salt bundle in Ubuntu2204"
+                sh "osc copypac systemsmanagement:saltstack:bundle:testing:Ubuntu2204 saltbundlepy-apt systemsmanagement:saltstack:bundle:Ubuntu2204"
             }
         }
 

@@ -257,6 +257,9 @@ pipeline {
 
                 echo "Promote project config for Ubuntu2004 subproject"
                 sh "osc meta prjconf systemsmanagement:saltstack:bundle:testing:Ubuntu2004 | osc meta prjconf --file='-' systemsmanagement:saltstack:bundle:Ubuntu2004"
+
+                echo "Promote project config for Ubuntu2204 subproject"
+                sh "osc meta prjconf systemsmanagement:saltstack:bundle:testing:Ubuntu2204 | osc meta prjconf --file='-' systemsmanagement:saltstack:bundle:Ubuntu2204"
             }
         }
 

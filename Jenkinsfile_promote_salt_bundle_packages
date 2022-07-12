@@ -141,7 +141,7 @@ pipeline {
                 echo "-- nothing to promote --"
 
                 echo "Promote dependencies for Salt bundle in AlmaLinux9"
-                echo "-- nothing to promote --"
+                sh "osc copypac systemsmanagement:saltstack:bundle:testing:AlmaLinux9 fdupes systemsmanagement:saltstack:bundle:AlmaLinux9"
 
                 echo "Promote dependencies for Salt bundle in CentOS7"
                 echo "-- nothing to promote --"

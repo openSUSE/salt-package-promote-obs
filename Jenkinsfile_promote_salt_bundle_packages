@@ -138,10 +138,10 @@ pipeline {
                 sh "osc copypac systemsmanagement:saltstack:bundle:testing saltbundlepy-zypp-plugin systemsmanagement:saltstack:bundle"
 
                 echo "Promote dependencies for Salt bundle in AlmaLinux8"
-                sh "osc copypac systemsmanagement:saltstack:bundle:testing:AlmaLinux8 fdupes systemsmanagement:saltstack:bundle:AlmaLinux8"
+                echo "-- nothing to promote --"
 
                 echo "Promote dependencies for Salt bundle in CentOS7"
-                sh "osc copypac systemsmanagement:saltstack:bundle:testing:CentOS7 fdupes systemsmanagement:saltstack:bundle:CentOS7"
+                echo "-- nothing to promote --"
 
                 echo "Promote dependencies for Salt bundle in CentOS8"
                 echo "-- nothing to promote --"

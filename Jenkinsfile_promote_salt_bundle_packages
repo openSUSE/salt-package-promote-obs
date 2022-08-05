@@ -65,7 +65,6 @@ pipeline {
                 sh "osc copypac systemsmanagement:saltstack:bundle:testing:debbuild perl-Try-Tiny systemsmanagement:saltstack:bundle:debbuild"
                 sh "osc copypac systemsmanagement:saltstack:bundle:testing:debbuild perl-UNIVERSAL-require systemsmanagement:saltstack:bundle:debbuild"
                 sh "osc copypac systemsmanagement:saltstack:bundle:testing:debbuild perl-parent systemsmanagement:saltstack:bundle:debbuild"
-                sh "osc copypac systemsmanagement:saltstack:bundle:testing:debbuild perl-version systemsmanagement:saltstack:bundle:debbuild"
             }
         }
 

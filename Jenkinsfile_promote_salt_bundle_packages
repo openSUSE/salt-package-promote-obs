@@ -177,15 +177,14 @@ pipeline {
                 sh "osc copypac systemsmanagement:saltstack:bundle:testing:Raspbian11 saltbundlepy-apt systemsmanagement:saltstack:bundle:Raspbian11"
 
                 echo "Promote dependencies for Salt bundle in openSUSE Leap 15"
-                sh "osc copypac systemsmanagement:saltstack:bundle:testing:openSUSE_Leap_15 saltbundlepy-libvirt systemsmanagement:saltstack:bundle:openSUSE_Leap_15"
+                echo "-- nothing to promote --"
 
                 echo "Promote dependencies for Salt bundle in openSUSE Tumbleweed"
-                sh "osc copypac systemsmanagement:saltstack:bundle:testing:openSUSE_Tumbleweed saltbundlepy-libvirt systemsmanagement:saltstack:bundle:openSUSE_Tumbleweed"
+                echo "-- nothing to promote --"
 
                 echo "Promote dependencies for Salt bundle in SLE12"
                 sh "osc copypac systemsmanagement:saltstack:bundle:testing:SLE12 autoconf-archive systemsmanagement:saltstack:bundle:SLE12"
                 sh "osc copypac systemsmanagement:saltstack:bundle:testing:SLE12 saltbundle-openssl systemsmanagement:saltstack:bundle:SLE12"
-                sh "osc copypac systemsmanagement:saltstack:bundle:testing:SLE12 saltbundlepy-libvirt systemsmanagement:saltstack:bundle:SLE12"
 
                 echo "Promote dependencies for Salt bundle in SLE15"
                 sh "osc copypac systemsmanagement:saltstack:bundle:testing:SLE15 saltbundlepy-libvirt systemsmanagement:saltstack:bundle:SLE15"

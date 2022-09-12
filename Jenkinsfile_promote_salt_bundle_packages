@@ -17,10 +17,10 @@ pipeline {
     stages {
         stage('Initial Checks') {
             steps {
-                echo "Check that 'openSUSE-MU-${mu_version}' branch exists at https://github.com/openSUSE/salt"
+                echo "Check that 'openSUSE/MU/${mu_version}' branch exists at https://github.com/openSUSE/salt"
                 sh "curl -I --fail https://codeload.github.com/openSUSE/salt/tar.gz/openSUSE/MU/${mu_version}"
 
-                echo "Check that 'MU-${mu_version}' branch exists at https://github.com/openSUSE/salt-packaging"
+                echo "Check that 'MU/${mu_version}' branch exists at https://github.com/openSUSE/salt-packaging"
                 sh "curl -I --fail https://codeload.github.com/openSUSE/salt-packaging/tar.gz/MU/${mu_version}"
             }
         }

@@ -18,20 +18,20 @@ pipeline {
     stages {
         stage('Initial Checks') {
             steps {
-                echo "Check that 'openSUSE-MU-${mu_version}' branch exists at https://github.com/openSUSE/salt"
-                sh "curl -I --fail https://codeload.github.com/openSUSE/salt/tar.gz/openSUSE-MU-${mu_version}"
+                echo "Check that 'openSUSE/MU/${mu_version}' branch exists at https://github.com/openSUSE/salt"
+                sh "curl -I --fail https://codeload.github.com/openSUSE/salt/tar.gz/openSUSE/MU/${mu_version}"
 
-                echo "Check that 'MU-${mu_version}' branch exists at https://github.com/openSUSE/salt-packaging"
-                sh "curl -I --fail https://codeload.github.com/openSUSE/salt-packaging/tar.gz/MU-${mu_version}"
+                echo "Check that 'MU/${mu_version}' branch exists at https://github.com/openSUSE/salt-packaging"
+                sh "curl -I --fail https://codeload.github.com/openSUSE/salt-packaging/tar.gz/MU/${mu_version}"
 
                 echo "Check that 'products:testing' and 'products:testing:debian' are not set to MU branches"
-                sh "! curl https://build.opensuse.org/package/view_file/systemsmanagement:saltstack:products:testing/salt/_service?expand=1 | grep MU-${mu_version}"
-                sh "! curl https://build.opensuse.org/package/view_file/systemsmanagement:saltstack:products:testing:debian/salt/_service?expand=1 | grep MU-${mu_version}"
+                sh "! curl https://build.opensuse.org/package/view_file/systemsmanagement:saltstack:products:testing/salt/_service?expand=1 | grep MU/${mu_version}"
+                sh "! curl https://build.opensuse.org/package/view_file/systemsmanagement:saltstack:products:testing:debian/salt/_service?expand=1 | grep MU/${mu_version}"
 
                 echo "Check that 'products:3000:testing', 'products:3000:testing:debian', and 'products:3000:testing:debian:python3' are not set to MU branches"
-                sh "! curl https://build.opensuse.org/package/view_file/systemsmanagement:saltstack:products:3000:testing/salt/_service?expand=1 | grep MU-${mu_version}"
-                sh "! curl https://build.opensuse.org/package/view_file/systemsmanagement:saltstack:products:3000:testing:debian/salt/_service?expand=1 | grep MU-${mu_version}"
-                sh "! curl https://build.opensuse.org/package/view_file/systemsmanagement:saltstack:products:3000:testing:debian:python3/salt/_service?expand=1 | grep MU-${mu_version}"
+                sh "! curl https://build.opensuse.org/package/view_file/systemsmanagement:saltstack:products:3000:testing/salt/_service?expand=1 | grep MU/${mu_version}"
+                sh "! curl https://build.opensuse.org/package/view_file/systemsmanagement:saltstack:products:3000:testing:debian/salt/_service?expand=1 | grep MU/${mu_version}"
+                sh "! curl https://build.opensuse.org/package/view_file/systemsmanagement:saltstack:products:3000:testing:debian:python3/salt/_service?expand=1 | grep MU/${mu_version}"
 
                 echo "Check the source tarball is properly named to salt_${salt_version}.orig.tar.gz in 'products:testing:debian'"
                 sh "curl https://build.opensuse.org/package/view_file/systemsmanagement:saltstack:products:testing:debian/salt/_service?expand=0 | grep salt_${salt_version}.orig.tar.g"

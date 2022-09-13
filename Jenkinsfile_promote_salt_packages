@@ -121,27 +121,6 @@ pipeline {
                         sh "osc commit -m 'Remove tarball and disable service after promoting'"
                     }
                     sh "rm systemsmanagement:saltstack:products:3000:testing:debian/salt -rf"
-
-                    echo 'Disable services in "products:3000:testing:debian:python3"'
-                    sh "osc co systemsmanagement:saltstack:products:3000:testing:debian:python3 salt"
-                    dir('/tmp/salt-promote-pipeline-env/systemsmanagement:saltstack:products:3000:testing:debian:python3/salt') {
-                        sh "cp _service _service.backup"
-                        sh "sed -i 's/name=\"download_url\">/name=\"download_url\" mode=\"disabled\">/g' _service"
-
-                        echo 'Execute disabled services to ensure tarball is updated in "products:3000:testing:debian:python3"'
-                        sh "osc service disabledrun || true"
-                        sh "osc add salt_3000.orig.tar.gz"
-                        sh "osc commit -m 'Disable services and temporary add tarball before promoting'"
-
-                        echo 'Promote "products:3000:testing:debian:python3" package'
-                        sh "osc copypac systemsmanagement:saltstack:products:3000:testing:debian:python3 salt systemsmanagement:saltstack:products:3000:debian:python3"
-
-                        echo 'Re-enable services in "products:3000:testing:debian:python3"'
-                        sh "cp _service.backup _service"
-                        sh "osc rm salt_3000.orig.tar.gz"
-                        sh "osc commit -m 'Remove tarball and disable service after promoting'"
-                    }
-                    sh "rm systemsmanagement:saltstack:products:3000:testing:debian:python3/salt -rf"
                 }
             }
         }
@@ -153,8 +132,6 @@ pipeline {
             sh "osc linkpac systemsmanagement:saltstack:products salt systemsmanagement:saltstack:products:debian -f"
             echo 'Fix package link at promoted "products:3000:debian" package'
             sh "osc linkpac systemsmanagement:saltstack:products:3000 salt systemsmanagement:saltstack:products:3000:debian -f"
-            echo 'Fix package link at promoted "products:3000:debian:python3" package'
-            sh "osc linkpac systemsmanagement:saltstack:products:3000 salt systemsmanagement:saltstack:products:3000:debian:python3 -f"
             echo 'Remove OBS environment at /tmp/salt-promote-pipeline-env'
             sh "rm /tmp/salt-promote-pipeline-env -rf || true"
         }

@@ -82,7 +82,7 @@ pipeline {
                         sh "osc commit -m 'Disable services and temporary add tarball before promoting'"
 
                         echo 'Promote "products:testing:debian" packages'
-                        sh "osc copypac systemsmanagement:saltstack:products:testing:debian salt systemsmanagement:saltstack:products:debian"
+                        sh "osc copypac --keep-link systemsmanagement:saltstack:products:testing:debian salt systemsmanagement:saltstack:products:debian"
                         sh "osc copypac systemsmanagement:saltstack:products:testing:debian python3-contextvars systemsmanagement:saltstack:products:debian"
                         sh "osc copypac systemsmanagement:saltstack:products:testing:debian python3-immutables systemsmanagement:saltstack:products:debian"
                         sh "osc copypac systemsmanagement:saltstack:products:testing:debian python3-zmq systemsmanagement:saltstack:products:debian"
@@ -113,7 +113,7 @@ pipeline {
                         sh "osc commit -m 'Disable services and temporary add tarball before promoting'"
 
                         echo 'Promote "products:3000:testing:debian" package'
-                        sh "osc copypac systemsmanagement:saltstack:products:3000:testing:debian salt systemsmanagement:saltstack:products:3000:debian"
+                        sh "osc copypac --keep-link systemsmanagement:saltstack:products:3000:testing:debian salt systemsmanagement:saltstack:products:3000:debian"
 
                         echo 'Re-enable services in "products:3000:testing:debian"'
                         sh "cp _service.backup _service"
@@ -128,10 +128,6 @@ pipeline {
 
     post {
         always {
-            echo 'Fix package link at promoted "products:debian" package'
-            sh "osc linkpac systemsmanagement:saltstack:products salt systemsmanagement:saltstack:products:debian -f"
-            echo 'Fix package link at promoted "products:3000:debian" package'
-            sh "osc linkpac systemsmanagement:saltstack:products:3000 salt systemsmanagement:saltstack:products:3000:debian -f"
             echo 'Remove OBS environment at /tmp/salt-promote-pipeline-env'
             sh "rm /tmp/salt-promote-pipeline-env -rf || true"
         }

@@ -40,6 +40,7 @@ pipeline {
                 sh "osc copypac systemsmanagement:saltstack:bundle:testing:debbuild perl-Devel-Symdump systemsmanagement:saltstack:bundle:debbuild"
                 sh "osc copypac systemsmanagement:saltstack:bundle:testing:debbuild perl-Exception-Class systemsmanagement:saltstack:bundle:debbuild"
                 sh "osc copypac systemsmanagement:saltstack:bundle:testing:debbuild perl-ExtUtils-CBuilder systemsmanagement:saltstack:bundle:debbuild"
+                sh "osc copypac systemsmanagement:saltstack:bundle:testing:debbuild perl-ExtUtils-MakeMaker systemsmanagement:saltstack:bundle:debbuild"
                 sh "osc copypac systemsmanagement:saltstack:bundle:testing:debbuild perl-ExtUtils-PkgConfig systemsmanagement:saltstack:bundle:debbuild"
                 sh "osc copypac systemsmanagement:saltstack:bundle:testing:debbuild perl-File-Path systemsmanagement:saltstack:bundle:debbuild"
                 sh "osc copypac systemsmanagement:saltstack:bundle:testing:debbuild perl-File-Temp systemsmanagement:saltstack:bundle:debbuild"

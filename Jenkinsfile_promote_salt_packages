@@ -9,7 +9,7 @@ properties([
 pipeline {
 
     parameters {
-        string(defaultValue: '3000', description: 'Salt version to promote from products:testing to products.', name: 'salt_version')
+        string(defaultValue: '3004', description: 'Salt version to promote from products:testing to products.', name: 'salt_version')
         string(defaultValue: '', description: 'SUSE Manager maintenance update version that this Salt update is released with, e.g. 4.1.7', name: 'mu_version')
     }
 
@@ -27,11 +27,6 @@ pipeline {
                 echo "Check that 'products:testing' and 'products:testing:debian' are not set to MU branches"
                 sh "! curl https://build.opensuse.org/package/view_file/systemsmanagement:saltstack:products:testing/salt/_service?expand=1 | grep MU/${mu_version}"
                 sh "! curl https://build.opensuse.org/package/view_file/systemsmanagement:saltstack:products:testing:debian/salt/_service?expand=1 | grep MU/${mu_version}"
-
-                echo "Check that 'products:3000:testing', 'products:3000:testing:debian', and 'products:3000:testing:debian:python3' are not set to MU branches"
-                sh "! curl https://build.opensuse.org/package/view_file/systemsmanagement:saltstack:products:3000:testing/salt/_service?expand=1 | grep MU/${mu_version}"
-                sh "! curl https://build.opensuse.org/package/view_file/systemsmanagement:saltstack:products:3000:testing:debian/salt/_service?expand=1 | grep MU/${mu_version}"
-                sh "! curl https://build.opensuse.org/package/view_file/systemsmanagement:saltstack:products:3000:testing:debian:python3/salt/_service?expand=1 | grep MU/${mu_version}"
 
                 echo "Check the source tarball is properly named to salt_${salt_version}.orig.tar.gz in 'products:testing:debian'"
                 sh "curl https://build.opensuse.org/package/view_file/systemsmanagement:saltstack:products:testing:debian/salt/_service?expand=0 | grep salt_${salt_version}.orig.tar.g"
@@ -57,13 +52,6 @@ pipeline {
                 sh "osc copypac systemsmanagement:saltstack:products:testing py26-compat-msgpack-python systemsmanagement:saltstack:products"
                 sh "osc copypac systemsmanagement:saltstack:products:testing py27-compat-salt systemsmanagement:saltstack:products"
                 sh "osc copypac systemsmanagement:saltstack:products:old:testing salt systemsmanagement:saltstack:products:old"
-            }
-        }
-
-        stage('Promote Salt 3000 testing RPM packages') {
-            steps {
-                echo 'Promote Salt 3000 testing packages from "products:3000:testing" to "products:3000"'
-                sh "osc copypac systemsmanagement:saltstack:products:3000:testing salt systemsmanagement:saltstack:products:3000"
             }
         }
 
@@ -97,34 +85,6 @@ pipeline {
                 }
             }
         }
-
-        stage('Promote Salt 3000 testing DEB packages') {
-            steps {
-                dir('/tmp/salt-promote-pipeline-env') {
-                    echo 'Disable services in "products:3000:testing:debian"'
-                    sh "osc co systemsmanagement:saltstack:products:3000:testing:debian salt"
-                    dir('/tmp/salt-promote-pipeline-env/systemsmanagement:saltstack:products:3000:testing:debian/salt') {
-                        sh "cp _service _service.backup"
-                        sh "sed -i 's/name=\"download_url\">/name=\"download_url\" mode=\"disabled\">/g' _service"
-
-                        echo 'Execute disabled services to ensure tarball is updated in "products:3000:testing:debian"'
-                        sh "osc service disabledrun || true"
-                        sh "osc add salt_3000.orig.tar.gz"
-                        sh "osc commit -m 'Disable services and temporary add tarball before promoting'"
-
-                        echo 'Promote "products:3000:testing:debian" package'
-                        sh "osc copypac --keep-link systemsmanagement:saltstack:products:3000:testing:debian salt systemsmanagement:saltstack:products:3000:debian"
-
-                        echo 'Re-enable services in "products:3000:testing:debian"'
-                        sh "cp _service.backup _service"
-                        sh "osc rm salt_3000.orig.tar.gz"
-                        sh "osc commit -m 'Remove tarball and disable service after promoting'"
-                    }
-                    sh "rm systemsmanagement:saltstack:products:3000:testing:debian/salt -rf"
-                }
-            }
-        }
-    }
 
     post {
         always {

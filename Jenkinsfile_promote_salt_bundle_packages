@@ -97,6 +97,7 @@ pipeline {
                 sh "osc copypac systemsmanagement:saltstack:bundle:testing saltbundlepy-jinja2 systemsmanagement:saltstack:bundle"
                 sh "osc copypac systemsmanagement:saltstack:bundle:testing saltbundlepy-kiwi systemsmanagement:saltstack:bundle"
                 sh "osc copypac systemsmanagement:saltstack:bundle:testing saltbundlepy-lxml systemsmanagement:saltstack:bundle"
+                sh "osc copypac systemsmanagement:saltstack:bundle:testing saltbundlepy-looseversion systemsmanagement:saltstack:bundle"
                 sh "osc copypac systemsmanagement:saltstack:bundle:testing saltbundlepy-m2crypto systemsmanagement:saltstack:bundle"
                 sh "osc copypac systemsmanagement:saltstack:bundle:testing saltbundlepy-markupsafe systemsmanagement:saltstack:bundle"
                 sh "osc copypac systemsmanagement:saltstack:bundle:testing saltbundlepy-more-itertools systemsmanagement:saltstack:bundle"

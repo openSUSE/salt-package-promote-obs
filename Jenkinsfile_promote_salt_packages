@@ -85,6 +85,7 @@ pipeline {
                 }
             }
         }
+    }
 
     post {
         always {
@@ -92,5 +93,4 @@ pipeline {
             sh "rm /tmp/salt-promote-pipeline-env -rf || true"
         }
     }
-
 }

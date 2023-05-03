@@ -187,6 +187,8 @@ pipeline {
                 echo "Promote dependencies for Salt bundle in SLE12"
                 sh "osc copypac systemsmanagement:saltstack:bundle:testing:SLE12 autoconf-archive systemsmanagement:saltstack:bundle:SLE12"
                 sh "osc copypac systemsmanagement:saltstack:bundle:testing:SLE12 saltbundle-openssl systemsmanagement:saltstack:bundle:SLE12"
+                sh "osc copypac systemsmanagement:saltstack:bundle:testing:SLE12 pcre2 systemsmanagement:saltstack:bundle:SLE12"
+                sh "osc copypac systemsmanagement:saltstack:bundle:testing:SLE12 saltbundlepy-libvirt systemsmanagement:saltstack:bundle:SLE12"
 
                 echo "Promote dependencies for Salt bundle in SLE15"
                 sh "osc copypac systemsmanagement:saltstack:bundle:testing:SLE15 saltbundlepy-libvirt systemsmanagement:saltstack:bundle:SLE15"

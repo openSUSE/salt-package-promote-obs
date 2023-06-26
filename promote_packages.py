@@ -1,7 +1,7 @@
 #!/usr/bin/python3
 """
 This script is used to copy packages from one OBS project to another
-and does the same for its subprojects. 
+and does the same for its subprojects.
 
 - Takes source and destination project names from arguments.
 - Shows diff between source an destination packages before copying
@@ -11,6 +11,7 @@ configuration from source to destination subproject.
 """
 
 import sys
+from difflib import unified_diff
 from traceback import format_exc
 from subprocess import run, CalledProcessError
 from lxml import etree
@@ -45,7 +46,8 @@ def get_diff(src, dst, pkgname) -> str:
     result = run(["osc", "rdiff", src, pkgname, dst], check=True, capture_output=True)
     return result.stdout.decode("utf-8")
 
-def get_subprojects(client, prefix) -> list:
+def get_subprojects(client, project_name) -> list:
+    prefix = project_name + ":"
     root = client.search.project("starts-with(@name,'" + prefix + "')")
     return [p.attrib["name"] for p in root.findall("project")]
 
@@ -63,17 +65,32 @@ def has_link(client, project, package) -> bool:
     linkinfo = etree.fromstring(etree.tostring(pkg_files).decode('utf-8')).find("linkinfo")
     return linkinfo is not None
 
-osc = Osc(url="https://api.opensuse.org/")
+if __name__ == "__main__":
+    osc = Osc(url="https://api.opensuse.org/")
 
-BASE_SRC = sys.argv[1]
-BASE_DST = sys.argv[2]
+    BASE_SRC = sys.argv[1]
+    BASE_DST = sys.argv[2]
 
-copy_packages(osc, BASE_SRC, BASE_DST)
+    copy_packages(osc, BASE_SRC, BASE_DST)
 
-subprojects_src = get_subprojects(osc, BASE_SRC + ":")
-for subproject_src in subprojects_src:
-    sp_name = subproject_src[len(BASE_SRC) + 1:]
-    copy_packages(osc, BASE_SRC, BASE_DST, sp_name)
-    cfg = get_project_config(osc, subproject_src)
-    if cfg != '':
-        set_project_config(osc, BASE_DST + ":" + sp_name, cfg)
+    subprojects_src = get_subprojects(osc, BASE_SRC)
+    subprojects_dst = get_subprojects(osc, BASE_DST)
+
+    for subproject_src in subprojects_src:
+        sp_name = subproject_src[len(BASE_SRC) + 1:]
+        subproject_src = BASE_SRC + ":" + sp_name
+        subproject_dst = BASE_DST + ":" + sp_name
+
+        if subproject_dst in subprojects_dst:
+            copy_packages(osc, BASE_SRC, BASE_DST, sp_name)
+
+            cfg_src = get_project_config(osc, subproject_src)
+            cfg_dst = get_project_config(osc, subproject_dst)
+            print(f"Configuration diff for {subproject_src} and {subproject_dst}")
+            for line in unified_diff(cfg_src.splitlines(), cfg_dst.splitlines()):
+                print(line)
+
+            set_project_config(osc, BASE_DST + ":" + sp_name, cfg_src)
+        else:
+            print(f"The project {subproject_dst} does not exist.")
+            

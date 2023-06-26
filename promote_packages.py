@@ -13,7 +13,7 @@ configuration from source to destination subproject.
 import sys
 from difflib import unified_diff
 from traceback import format_exc
-from subprocess import run, CalledProcessError
+from subprocess import run,CalledProcessError,PIPE
 from lxml import etree
 from osctiny import Osc
 from osctiny.extensions.packages import Package
@@ -43,7 +43,7 @@ def copy_packages(client, src, dst, subproject=None):
                 sys.exit(1)
 
 def get_diff(src, dst, pkgname) -> str:
-    result = run(["osc", "rdiff", src, pkgname, dst], check=True, capture_output=True)
+    result = run(["osc", "rdiff", src, pkgname, dst], check=True, stdout=PIPE, stderr=PIPE)
     return result.stdout.decode("utf-8")
 
 def get_subprojects(client, project_name) -> list:

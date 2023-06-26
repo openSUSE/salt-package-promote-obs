@@ -13,7 +13,7 @@ configuration from source to destination subproject.
 import sys
 from difflib import unified_diff
 from traceback import format_exc
-from subprocess import run,CalledProcessError,PIPE
+from subprocess import run,CalledProcessError, PIPE
 from lxml import etree
 from osctiny import Osc
 from osctiny.extensions.packages import Package

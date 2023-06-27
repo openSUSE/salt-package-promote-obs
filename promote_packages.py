@@ -33,17 +33,19 @@ def copy_packages(client, src, dst, subproject=None):
         if package_name is not None and not has_link(client, src, package_name):
             try:
                 result = get_diff(src, dst, package_name)
-                print(f"Diff for {package_name}: {result}")
+                print("###################################################################", flush=True)
+                print(f"Diff for {package_name}:\n {result}", flush=True)
+                print("###################################################################", flush=True)
                 if result != "":
-                    print(f"Copying {package_name} from {src} to {dst}")
+                    print(f"Copying {package_name} from {src} to {dst}\n", flush=True)
                     run(["osc", "copypac", src, package_name, dst], check=True)
             except CalledProcessError:
-                print(f"Could not copypac {package_name}")
-                print(format_exc())
+                print(f"Could not copypac {package_name}\n", flush=True)
+                print(format_exc(),flush=True)
                 sys.exit(1)
 
 def get_diff(src, dst, pkgname) -> str:
-    result = run(["osc", "rdiff", src, pkgname, dst], check=True, stdout=PIPE, stderr=PIPE)
+    result = run(["osc", "rdiff", dst, pkgname, src], check=True, stdout=PIPE, stderr=PIPE)
     return result.stdout.decode("utf-8")
 
 def get_subprojects(client, project_name) -> list:
@@ -86,11 +88,13 @@ if __name__ == "__main__":
 
             cfg_src = get_project_config(osc, subproject_src)
             cfg_dst = get_project_config(osc, subproject_dst)
-            print(f"Configuration diff for {subproject_src} and {subproject_dst}")
+            print("###################################################################", flush=True)
+            print(f"Configuration diff for {subproject_src} and {subproject_dst}\n", flush=True)
             for line in unified_diff(cfg_src.splitlines(), cfg_dst.splitlines()):
-                print(line)
+                print(line, flush=True)
+            print("###################################################################", flush=True)
 
             set_project_config(osc, BASE_DST + ":" + sp_name, cfg_src)
         else:
-            print(f"The project {subproject_dst} does not exist.")
+            print(f"The project {subproject_dst} does not exist.\n", flush=True)
             

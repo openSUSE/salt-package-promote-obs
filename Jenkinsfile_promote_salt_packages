@@ -42,16 +42,8 @@ pipeline {
         stage('Promote Salt testing RPM packages') {
             steps {
                 echo 'Promote Salt testing packages from "products:testing" to "products"'
-                sh "osc copypac systemsmanagement:saltstack:products:testing salt systemsmanagement:saltstack:products"
-                sh "osc copypac systemsmanagement:saltstack:products:testing python-contextvars systemsmanagement:saltstack:products"
-                sh "osc copypac systemsmanagement:saltstack:products:testing python3-contextvars systemsmanagement:saltstack:products"
-                sh "osc copypac systemsmanagement:saltstack:products:testing python-immutables systemsmanagement:saltstack:products"
-                sh "osc copypac systemsmanagement:saltstack:products:testing python3-immutables systemsmanagement:saltstack:products"
-                sh "osc copypac systemsmanagement:saltstack:products:testing py26-compat-salt systemsmanagement:saltstack:products"
-                sh "osc copypac systemsmanagement:saltstack:products:testing py26-compat-tornado systemsmanagement:saltstack:products"
-                sh "osc copypac systemsmanagement:saltstack:products:testing py26-compat-msgpack-python systemsmanagement:saltstack:products"
-                sh "osc copypac systemsmanagement:saltstack:products:testing py27-compat-salt systemsmanagement:saltstack:products"
-                sh "osc copypac systemsmanagement:saltstack:products:old:testing salt systemsmanagement:saltstack:products:old"
+                sh "python3 promote_packages.py -s systemsmanagement:saltstack:products:testing -t systemsmanagement:saltstack:products"
+                sh "python3 promote_packages.py -s systemsmanagement:saltstack:products:old:testing -t systemsmanagement:saltstack:products:old"
             }
         }
 
@@ -71,10 +63,7 @@ pipeline {
 
                         echo 'Promote "products:testing:debian" packages'
                         sh "osc copypac --keep-link systemsmanagement:saltstack:products:testing:debian salt systemsmanagement:saltstack:products:debian"
-                        sh "osc copypac systemsmanagement:saltstack:products:testing:debian python3-contextvars systemsmanagement:saltstack:products:debian"
-                        sh "osc copypac systemsmanagement:saltstack:products:testing:debian python3-immutables systemsmanagement:saltstack:products:debian"
-                        sh "osc copypac systemsmanagement:saltstack:products:testing:debian python3-zmq systemsmanagement:saltstack:products:debian"
-                        sh "osc copypac systemsmanagement:saltstack:products:testing:debian python3-gnupg systemsmanagement:saltstack:products:debian"
+                        sh "python3 promote_packages.py -s systemsmanagement:saltstack:products:testing:debian -t systemsmanagement:saltstack:products:debian --excluded salt"
 
                         echo 'Re-enable services in "products:testing:debian"'
                         sh "cp _service.backup _service"

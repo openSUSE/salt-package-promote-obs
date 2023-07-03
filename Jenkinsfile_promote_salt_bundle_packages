@@ -27,7 +27,7 @@ pipeline {
 
         stage('Promote Salt Bundle dependency packages and project configurations for Salt Bundle subprojects') {
             steps {
-                sh 'python3 promote_packages.py systemsmanagement:saltstack:bundle:testing systemsmanagement:saltstack:bundle'
+                sh 'python3 promote_packages.py -s systemsmanagement:saltstack:bundle:testing -t systemsmanagement:saltstack:bundle'
             }
         }
     }

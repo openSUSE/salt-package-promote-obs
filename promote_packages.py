@@ -46,7 +46,7 @@ def copy_packages(client, src, dst, subproject=None, exclude_packages=None):
                     "###################################################################",
                     flush=True,
                 )
-                print(f"Diff for {package_name}:\n {result}", flush=True)
+                print(f"Diff for {package_name} package from {src} to {dst}:\n {result}", flush=True)
                 print(
                     "###################################################################",
                     flush=True,

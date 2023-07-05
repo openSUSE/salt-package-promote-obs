@@ -97,47 +97,59 @@ if __name__ == "__main__":
     parser.add_argument("-s", "--source", dest="src", help="Source Project")
     parser.add_argument("-t", "--target", dest="dst", help="Target Project")
     parser.add_argument(
+        "-A", "--apiurl", dest="url", default="https://api.opensuse.org",
+        help="URL to Build Service API"
+    )
+    parser.add_argument(
         "--exclude", dest="exclude_packages", action="append", metavar="PACKAGE_TO_EXCLUDE"
     )
 
+    commands = parser.add_subparsers(dest="action", title='Available actions', required=True)
+    commands.add_parser('packages', help="Promote packages from Source to Target projects")
+    commands.add_parser('subprojects', help="Promote packages inside subprojects")
+    commands.add_parser('projectconfigs', help="Promote project configs for subprojects")
+
     args = parser.parse_args()
 
-    osc = Osc(url="https://api.opensuse.org/")
+    osc = Osc(url=args.url)
 
     BASE_SRC = args.src
     BASE_DST = args.dst
-    excluded = args.excluded_packages
+    exclude = args.exclude_packages
 
-    copy_packages(osc, BASE_SRC, BASE_DST, excluded_packages=excluded)
+    if args.action == "packages":
+        copy_packages(osc, BASE_SRC, BASE_DST, exclude_packages=exclude)
 
-    subprojects_src = get_subprojects(osc, BASE_SRC)
-    subprojects_dst = get_subprojects(osc, BASE_DST)
+    if args.action in ["subprojects", "projectconfigs"]:
+        subprojects_src = get_subprojects(osc, BASE_SRC)
+        subprojects_dst = get_subprojects(osc, BASE_DST)
 
-    for subproject_src in subprojects_src:
-        sp_name = subproject_src[len(BASE_SRC) + 1 :]
-        subproject_src = BASE_SRC + ":" + sp_name
-        subproject_dst = BASE_DST + ":" + sp_name
+        for subproject_src in subprojects_src:
+            sp_name = subproject_src[len(BASE_SRC) + 1 :]
+            subproject_src = BASE_SRC + ":" + sp_name
+            subproject_dst = BASE_DST + ":" + sp_name
+            if subproject_dst in subprojects_dst:
+                if args.action == "subprojects":
+                    copy_packages(osc, BASE_SRC, BASE_DST, sp_name, exclude)
 
-        if subproject_dst in subprojects_dst:
-            copy_packages(osc, BASE_SRC, BASE_DST, sp_name, excluded)
+                if args.action == "projectconfigs":
+                    cfg_src = get_project_config(osc, subproject_src)
+                    cfg_dst = get_project_config(osc, subproject_dst)
+                    print(
+                        "###################################################################",
+                        flush=True,
+                    )
+                    print(
+                        f"Configuration diff for {subproject_src} and {subproject_dst}\n",
+                        flush=True,
+                    )
+                    for line in unified_diff(cfg_src.splitlines(), cfg_dst.splitlines()):
+                        print(line, flush=True)
+                    print(
+                        "###################################################################",
+                        flush=True,
+                    )
 
-            cfg_src = get_project_config(osc, subproject_src)
-            cfg_dst = get_project_config(osc, subproject_dst)
-            print(
-                "###################################################################",
-                flush=True,
-            )
-            print(
-                f"Configuration diff for {subproject_src} and {subproject_dst}\n",
-                flush=True,
-            )
-            for line in unified_diff(cfg_src.splitlines(), cfg_dst.splitlines()):
-                print(line, flush=True)
-            print(
-                "###################################################################",
-                flush=True,
-            )
-
-            set_project_config(osc, BASE_DST + ":" + sp_name, cfg_src)
-        else:
-            print(f"The project {subproject_dst} does not exist.\n", flush=True)
+                    set_project_config(osc, BASE_DST + ":" + sp_name, cfg_src)
+            else:
+                print(f"The project {subproject_dst} does not exist.\n", flush=True)

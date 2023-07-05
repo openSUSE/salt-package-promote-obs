@@ -21,14 +21,14 @@ from osctiny.extensions.packages import Package
 from osctiny.extensions.projects import Project
 
 
-def copy_packages(client, src, dst, subproject=None, excluded_packages=None):
+def copy_packages(client, src, dst, subproject=None, exclude_packages=None):
     pkg_handler = Package(client)
     if subproject is not None:
         src = src + ":" + subproject
         dst = dst + ":" + subproject
 
-    if excluded_packages is None:
-        excluded_packages = []
+    if exclude_packages is None:
+        exclude_packages = []
 
     packages_list = pkg_handler.get_list(project=src)
     for package in packages_list.iter():
@@ -37,7 +37,7 @@ def copy_packages(client, src, dst, subproject=None, excluded_packages=None):
         # Packages with no link should be the ones that we mainain.
         if (
             package_name is not None
-            and package_name not in excluded_packages
+            and package_name not in exclude_packages
             and not has_link(client, src, package_name)
         ):
             try:
@@ -97,7 +97,7 @@ if __name__ == "__main__":
     parser.add_argument("-s", "--source", dest="src", help="Source Project")
     parser.add_argument("-t", "--target", dest="dst", help="Target Project")
     parser.add_argument(
-        "--excluded", dest="excluded_packages", metavar="EXCLUDED_PACKAGE", nargs="+"
+        "--exclude", dest="exclude_packages", action="append", metavar="PACKAGE_TO_EXCLUDE"
     )
 
     args = parser.parse_args()

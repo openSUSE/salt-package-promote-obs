@@ -46,16 +46,16 @@ def copy_packages(client, src, dst, subproject=None, exclude_packages=None):
                     "###################################################################",
                     flush=True,
                 )
-                print(f"Diff for {package_name}:\n {result}", flush=True)
+                print(f"Diff for '{package_name}' package from '{src}' to '{dst}':\n {result}", flush=True)
                 print(
                     "###################################################################",
                     flush=True,
                 )
                 if result != "":
-                    print(f"Copying {package_name} from {src} to {dst}\n", flush=True)
+                    print(f"Copying '{package_name}' from '{src}' to '{dst}'\n", flush=True)
                     run(["osc", "copypac", src, package_name, dst], check=True)
             except CalledProcessError:
-                print(f"Could not copypac {package_name}\n", flush=True)
+                print(f"Could not copypac '{package_name}'\n", flush=True)
                 print(format_exc(), flush=True)
                 sys.exit(1)
 
@@ -147,7 +147,7 @@ if __name__ == "__main__":
                         flush=True,
                     )
                     print(
-                        f"Configuration diff for {subproject_src} and {subproject_dst}\n",
+                        f"Configuration diff for '{subproject_src}' and '{subproject_dst}':\n",
                         flush=True,
                     )
                     for line in unified_diff(cfg_src.splitlines(), cfg_dst.splitlines()):
@@ -159,4 +159,4 @@ if __name__ == "__main__":
 
                     set_project_config(osc, BASE_DST + ":" + sp_name, cfg_src)
             else:
-                print(f"The project {subproject_dst} does not exist.\n", flush=True)
+                print(f"The project '{subproject_dst}' does not exist.\n", flush=True)

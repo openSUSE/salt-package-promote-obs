@@ -103,6 +103,9 @@ if __name__ == "__main__":
     parser.add_argument(
         "--exclude", dest="exclude_packages", action="append", metavar="PACKAGE_TO_EXCLUDE"
     )
+    parser.add_argument(
+        "--exclude-subproject", dest="exclude_subproject", action="append", metavar="SUBPROJECT_TO_EXCLUDE"
+    )
 
     commands = parser.add_subparsers(dest="action", title='Available actions', required=True)
     commands.add_parser('packages', help="Promote packages from Source to Target projects")
@@ -117,6 +120,7 @@ if __name__ == "__main__":
     BASE_SRC = args.src
     BASE_DST = args.dst
     exclude = args.exclude_packages
+    exclude_subprojects = args.exclude_subproject if args.exclude_subproject is not None else []
 
     if args.action in ["packages", "all"]:
         copy_packages(osc, BASE_SRC, BASE_DST, exclude_packages=exclude)
@@ -126,6 +130,8 @@ if __name__ == "__main__":
         subprojects_dst = get_subprojects(osc, BASE_DST)
 
         for subproject_src in subprojects_src:
+            if subproject_src in exclude_subprojects:
+                continue
             sp_name = subproject_src[len(BASE_SRC) + 1 :]
             subproject_src = BASE_SRC + ":" + sp_name
             subproject_dst = BASE_DST + ":" + sp_name

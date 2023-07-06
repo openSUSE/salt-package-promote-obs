@@ -108,6 +108,7 @@ if __name__ == "__main__":
     commands.add_parser('packages', help="Promote packages from Source to Target projects")
     commands.add_parser('subprojects', help="Promote packages inside subprojects")
     commands.add_parser('projectconfigs', help="Promote project configs for subprojects")
+    commands.add_parser('all', help="Perform all the actions")
 
     args = parser.parse_args()
 
@@ -117,10 +118,10 @@ if __name__ == "__main__":
     BASE_DST = args.dst
     exclude = args.exclude_packages
 
-    if args.action == "packages":
+    if args.action in ["packages", "all"]:
         copy_packages(osc, BASE_SRC, BASE_DST, exclude_packages=exclude)
 
-    if args.action in ["subprojects", "projectconfigs"]:
+    if args.action in ["subprojects", "projectconfigs", "all"]:
         subprojects_src = get_subprojects(osc, BASE_SRC)
         subprojects_dst = get_subprojects(osc, BASE_DST)
 
@@ -129,10 +130,10 @@ if __name__ == "__main__":
             subproject_src = BASE_SRC + ":" + sp_name
             subproject_dst = BASE_DST + ":" + sp_name
             if subproject_dst in subprojects_dst:
-                if args.action == "subprojects":
+                if args.action in ["subprojects", "all"]:
                     copy_packages(osc, BASE_SRC, BASE_DST, sp_name, exclude)
 
-                if args.action == "projectconfigs":
+                if args.action in ["projectconfigs", "all"]:
                     cfg_src = get_project_config(osc, subproject_src)
                     cfg_dst = get_project_config(osc, subproject_dst)
                     print(

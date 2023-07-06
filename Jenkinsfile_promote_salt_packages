@@ -9,41 +9,81 @@ properties([
 pipeline {
 
     parameters {
-        string(defaultValue: '3004', description: 'Salt version to promote from products:testing to products.', name: 'salt_version')
-        string(defaultValue: '', description: 'SUSE Manager maintenance update version that this Salt update is released with, e.g. 4.1.7', name: 'mu_version')
+        string(defaultValue: '3006.0', description: 'Salt version to promote from products:testing to products.', name: 'salt_version')
+        string(defaultValue: '', description: 'SUSE Manager maintenance update version that this Salt update is released with, e.g. 4.3.7', name: 'mu_version')
+        booleanParam(name: 'recreate_salt_mu_branches', defaultValue: false, description: 'Advanced: Uncheck this if you want to recreate the already existing MU branches at "openSUSE/salt" repository')
     }
 
     agent { label 'manager-jenkins-node' }
 
     stages {
-        stage('Initial Checks') {
+        stage('Create temporary environment for the pipeline') {
+            steps {
+                sh "mkdir /tmp/salt-promote-pipeline-env || true"
+            }
+        }
+
+        stage('Initial check and MU branches preparations') {
             steps {
                 echo "Check that 'openSUSE/MU/${mu_version}' branch exists at https://github.com/openSUSE/salt"
-                sh "curl -I --fail https://codeload.github.com/openSUSE/salt/tar.gz/openSUSE/MU/${mu_version}"
-
+                salt_mu_branch = sh(script: "curl -I --fail https://codeload.github.com/openSUSE/salt/tar.gz/openSUSE/MU/${mu_version}", returnStatus: true)
                 echo "Check that 'MU/${mu_version}' branch exists at https://github.com/openSUSE/salt-packaging"
-                sh "curl -I --fail https://codeload.github.com/openSUSE/salt-packaging/tar.gz/MU/${mu_version}"
+                salt_packaging_mu_branch = sh(script: "curl -I --fail https://codeload.github.com/openSUSE/salt-packaging/tar.gz/MU/${mu_version}", returnStatus: true)
+
+                dir('/tmp/salt-promote-pipeline-env') {
+                    if (salt_mu_branch != 0 || salt_packaging_mu_branch != 0) {
+                        echo "MU branches do not exist. Creating them"
+                        sh "git clone --branch openSUSE/release/${salt_version} --depth 1 https://github.com/openSUSE/salt"
+                        dir('/tmp/salt-promote-pipeline-env/salt') {
+                            sh "git checkout -b openSUSE/MU/${mu_version}"
+                            sh "git push origin openSUSE/MU/${mu_version}"
+                        }
+                        echo "Successfully created and pushed 'openSUSE/MU/${mu_version}' branch to 'openSUSE/salt' repository"
+                        sh "git clone --branch release/${salt_version} --depth 1 https://github.com/openSUSE/salt-packaging"
+                        dir('/tmp/salt-promote-pipeline-env/salt-packaging') {
+                            sh "git checkout -b MU/${mu_version}"
+                            sh "git push origin MU/${mu_version}"
+                        }
+                        echo "Successfully created and pushed 'MU/${mu_version}' branch to 'openSUSE/salt-packaging' repository"
+                    }
+                    else {
+                        if (recreate_salt_mu_branches) {
+                            // Forcing recreation of MU branches
+                            echo "The MU branches already exist, but pipeline was set to recreate them"
+                            sh "git clone --branch openSUSE/release/${salt_version} --depth 1 https://github.com/openSUSE/salt"
+                            dir('/tmp/salt-promote-pipeline-env/salt') {
+                                sh "git checkout -b openSUSE/MU/${mu_version}"
+                                sh "git push -f origin openSUSE/MU/${mu_version}"
+                            }
+                            echo "Successfully recreated and pushed 'openSUSE/MU/${mu_version}' branch to 'openSUSE/salt' repository"
+                            sh "git clone --branch release/${salt_version} --depth 1 https://github.com/openSUSE/salt-packaging"
+                            dir('/tmp/salt-promote-pipeline-env/salt-packaging') {
+                                sh "git checkout -b MU/${mu_version}"
+                                sh "git push -f origin MU/${mu_version}"
+                            }
+                            echo "Successfully recreated and pushed 'MU/${mu_version}' branch to 'openSUSE/salt-packaging' repository"
+                        }
+                        else {
+                            error("The MU branches were already created. Default promotion is not possible. Exiting.")
+                        }
+                    }
+                    sh "rm salt -rf && rm salt-packaging -rf"
+                }
 
                 echo "Check that 'products:testing' and 'products:testing:debian' are not set to MU branches"
                 sh "! curl https://build.opensuse.org/package/view_file/systemsmanagement:saltstack:products:testing/salt/_service?expand=1 | grep MU/${mu_version}"
                 sh "! curl https://build.opensuse.org/package/view_file/systemsmanagement:saltstack:products:testing:debian/salt/_service?expand=1 | grep MU/${mu_version}"
 
                 echo "Check the source tarball is properly named to salt_${salt_version}.orig.tar.gz in 'products:testing:debian'"
-                sh "curl https://build.opensuse.org/package/view_file/systemsmanagement:saltstack:products:testing:debian/salt/_service?expand=0 | grep salt_${salt_version}.orig.tar.g"
-            }
-        }
-
-        stage('Create temporary OBS environment') {
-            steps {
-                sh "mkdir /tmp/salt-promote-pipeline-env || true"
+                sh "curl https://build.opensuse.org/package/view_file/systemsmanagement:saltstack:products:testing:debian/salt/_service?expand=0 | grep salt_${salt_version}.orig.tar.gz"
             }
         }
 
         stage('Promote Salt testing RPM packages') {
             steps {
                 echo 'Promote Salt testing packages from "products:testing" to "products"'
-                sh "python3 promote_packages.py -s systemsmanagement:saltstack:products:testing -t systemsmanagement:saltstack:products"
-                sh "python3 promote_packages.py -s systemsmanagement:saltstack:products:old:testing -t systemsmanagement:saltstack:products:old"
+                sh "python3 promote_packages.py -s systemsmanagement:saltstack:products:testing -t systemsmanagement:saltstack:products packages"
+                sh "python3 promote_packages.py -s systemsmanagement:saltstack:products:old:testing -t systemsmanagement:saltstack:products:old packages"
             }
         }
 
@@ -63,7 +103,7 @@ pipeline {
 
                         echo 'Promote "products:testing:debian" packages'
                         sh "osc copypac --keep-link systemsmanagement:saltstack:products:testing:debian salt systemsmanagement:saltstack:products:debian"
-                        sh "python3 promote_packages.py -s systemsmanagement:saltstack:products:testing:debian -t systemsmanagement:saltstack:products:debian --excluded salt"
+                        sh "python3 promote_packages.py -s systemsmanagement:saltstack:products:testing:debian -t systemsmanagement:saltstack:products:debian --excluded salt packages"
 
                         echo 'Re-enable services in "products:testing:debian"'
                         sh "cp _service.backup _service"
@@ -78,7 +118,7 @@ pipeline {
 
     post {
         always {
-            echo 'Remove OBS environment at /tmp/salt-promote-pipeline-env'
+            echo 'Remove temporary environment at /tmp/salt-promote-pipeline-env'
             sh "rm /tmp/salt-promote-pipeline-env -rf || true"
         }
     }

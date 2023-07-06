@@ -107,7 +107,8 @@ if __name__ == "__main__":
         "--exclude-subproject", dest="exclude_subproject", action="append", metavar="SUBPROJECT_TO_EXCLUDE"
     )
 
-    commands = parser.add_subparsers(dest="action", title='Available actions', required=True)
+    commands = parser.add_subparsers(dest="action", title='Available actions')
+    commands.required = True
     commands.add_parser('packages', help="Promote packages from Source to Target projects")
     commands.add_parser('subprojects', help="Promote packages inside subprojects")
     commands.add_parser('projectconfigs', help="Promote project configs for subprojects")

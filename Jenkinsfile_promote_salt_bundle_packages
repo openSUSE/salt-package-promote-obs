@@ -35,7 +35,7 @@ pipeline {
         stage('Promote Salt bundle dependencies packages') {
             steps {
                 echo 'Promote general Salt bundle dependencies packages from "systemsmanagement:saltstack:bundle:testing" to "systemsmanagement:saltstack:bundle"'
-                sh 'python3 promote_packages.py -s systemsmanagement:saltstack:bundle:testing -t systemsmanagement:saltstack:bundle packages'
+                sh 'python3 promote_packages.py -s systemsmanagement:saltstack:bundle:testing -t systemsmanagement:saltstack:bundle --exclude venv-salt-minion packages'
                 echo 'Promote Salt bundle dependencies packages for different OSes'
                 sh 'python3 promote_packages.py -s systemsmanagement:saltstack:bundle:testing -t systemsmanagement:saltstack:bundle --exclude-subproject systemsmanagement:saltstack:bundle:testing:debbuild subprojects'
             }

@@ -24,58 +24,60 @@ pipeline {
         }
 
         stage('Initial check and MU branches preparations') {
-            steps {
-                echo "Check that 'openSUSE/test/${mu_version}' branch exists at https://github.com/openSUSE/salt"
-                salt_mu_branch = sh(script: "curl -I --fail https://codeload.github.com/openSUSE/salt/tar.gz/openSUSE/test/${mu_version}", returnStatus: true)
-                echo "Check that 'test/${mu_version}' branch exists at https://github.com/openSUSE/salt-packaging"
-                salt_packaging_mu_branch = sh(script: "curl -I --fail https://codeload.github.com/openSUSE/salt-packaging/tar.gz/test/${mu_version}", returnStatus: true)
+	    steps {
+                script {
+                    echo "Check that 'openSUSE/test/${mu_version}' branch exists at https://github.com/openSUSE/salt"
+                    salt_mu_branch = sh(script: "curl -I --fail https://codeload.github.com/openSUSE/salt/tar.gz/openSUSE/test/${mu_version}", returnStatus: true)
+                    echo "Check that 'test/${mu_version}' branch exists at https://github.com/openSUSE/salt-packaging"
+                    salt_packaging_mu_branch = sh(script: "curl -I --fail https://codeload.github.com/openSUSE/salt-packaging/tar.gz/test/${mu_version}", returnStatus: true)
 
-                dir('/tmp/salt-promote-pipeline-env') {
-                    if (salt_mu_branch != 0 || salt_packaging_mu_branch != 0) {
-                        echo "MU branches do not exist. Creating them"
-                        sh "git clone --branch openSUSE/release/${salt_version} --depth 1 https://github.com/openSUSE/salt"
-                        dir('/tmp/salt-promote-pipeline-env/salt') {
-                            sh "git checkout -b openSUSE/test/${mu_version}"
-                            sh "git push origin openSUSE/test/${mu_version}"
-                        }
-                        echo "Successfully created and pushed 'openSUSE/test/${mu_version}' branch to 'openSUSE/salt' repository"
-                        sh "git clone --branch release/${salt_version} --depth 1 https://github.com/openSUSE/salt-packaging"
-                        dir('/tmp/salt-promote-pipeline-env/salt-packaging') {
-                            sh "git checkout -b test/${mu_version}"
-                            sh "git push origin test/${mu_version}"
-                        }
-                        echo "Successfully created and pushed 'test/${mu_version}' branch to 'openSUSE/salt-packaging' repository"
-                    }
-                    else {
-                        if (recreate_salt_mu_branches) {
-                            // Forcing recreation of MU branches
-                            echo "The MU branches already exist, but pipeline was set to recreate them"
+                    dir('/tmp/salt-promote-pipeline-env') {
+                        if (salt_mu_branch != 0 || salt_packaging_mu_branch != 0) {
+                            echo "MU branches do not exist. Creating them"
                             sh "git clone --branch openSUSE/release/${salt_version} --depth 1 https://github.com/openSUSE/salt"
                             dir('/tmp/salt-promote-pipeline-env/salt') {
                                 sh "git checkout -b openSUSE/test/${mu_version}"
-                                sh "git push -f origin openSUSE/test/${mu_version}"
+                                sh "git push origin openSUSE/test/${mu_version}"
                             }
-                            echo "Successfully recreated and pushed 'openSUSE/test/${mu_version}' branch to 'openSUSE/salt' repository"
+                            echo "Successfully created and pushed 'openSUSE/test/${mu_version}' branch to 'openSUSE/salt' repository"
                             sh "git clone --branch release/${salt_version} --depth 1 https://github.com/openSUSE/salt-packaging"
                             dir('/tmp/salt-promote-pipeline-env/salt-packaging') {
                                 sh "git checkout -b test/${mu_version}"
-                                sh "git push -f origin test/${mu_version}"
+                                sh "git push origin test/${mu_version}"
                             }
-                            echo "Successfully recreated and pushed 'test/${mu_version}' branch to 'openSUSE/salt-packaging' repository"
+                            echo "Successfully created and pushed 'test/${mu_version}' branch to 'openSUSE/salt-packaging' repository"
                         }
                         else {
-                            error("The MU branches were already created. Default promotion is not possible. Exiting.")
+                            if (recreate_salt_mu_branches) {
+                                // Forcing recreation of MU branches
+                                echo "The MU branches already exist, but pipeline was set to recreate them"
+                                sh "git clone --branch openSUSE/release/${salt_version} --depth 1 https://github.com/openSUSE/salt"
+                                dir('/tmp/salt-promote-pipeline-env/salt') {
+                                    sh "git checkout -b openSUSE/test/${mu_version}"
+                                    sh "git push -f origin openSUSE/test/${mu_version}"
+                                }
+                                echo "Successfully recreated and pushed 'openSUSE/test/${mu_version}' branch to 'openSUSE/salt' repository"
+                                sh "git clone --branch release/${salt_version} --depth 1 https://github.com/openSUSE/salt-packaging"
+                                dir('/tmp/salt-promote-pipeline-env/salt-packaging') {
+                                    sh "git checkout -b test/${mu_version}"
+                                    sh "git push -f origin test/${mu_version}"
+                                }
+                                echo "Successfully recreated and pushed 'test/${mu_version}' branch to 'openSUSE/salt-packaging' repository"
+                            }
+                            else {
+                                error("The MU branches were already created. Default promotion is not possible. Exiting.")
+                            }
                         }
+                        sh "rm salt -rf && rm salt-packaging -rf"
                     }
-                    sh "rm salt -rf && rm salt-packaging -rf"
+
+                    echo "Check that 'products:testing' and 'products:testing:debian' are not set to MU branches"
+                    sh "! curl https://build.opensuse.org/package/view_file/home:PSuarezHernandez:testpipeline:testing/salt/_service?expand=1 | grep test/${mu_version}"
+                    sh "! curl https://build.opensuse.org/package/view_file/home:PSuarezHernandez:testpipeline:testing:debian/salt/_service?expand=1 | grep test/${mu_version}"
+
+                    echo "Check the source tarball is properly named to salt_${salt_version}.orig.tar.gz in 'products:testing:debian'"
+                    sh "curl https://build.opensuse.org/package/view_file/home:PSuarezHernandez:testpipeline:testing:debian/salt/_service?expand=0 | grep salt_${salt_version}.orig.tar.gz"
                 }
-
-                echo "Check that 'products:testing' and 'products:testing:debian' are not set to MU branches"
-                sh "! curl https://build.opensuse.org/package/view_file/home:PSuarezHernandez:testpipeline:testing/salt/_service?expand=1 | grep test/${mu_version}"
-                sh "! curl https://build.opensuse.org/package/view_file/home:PSuarezHernandez:testpipeline:testing:debian/salt/_service?expand=1 | grep test/${mu_version}"
-
-                echo "Check the source tarball is properly named to salt_${salt_version}.orig.tar.gz in 'products:testing:debian'"
-                sh "curl https://build.opensuse.org/package/view_file/home:PSuarezHernandez:testpipeline:testing:debian/salt/_service?expand=0 | grep salt_${salt_version}.orig.tar.gz"
             }
         }
 

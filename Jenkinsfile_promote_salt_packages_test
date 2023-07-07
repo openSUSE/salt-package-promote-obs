@@ -102,11 +102,15 @@ pipeline {
                         sh "osc service disabledrun || true"
                         sh "osc add salt_${salt_version}.orig.tar.gz"
                         sh "osc commit -m 'Disable services and temporary add tarball before promoting'"
+                    }
+		}
 
-                        echo 'Promote "products:testing:debian" packages'
-                        sh "osc copypac --keep-link home:PSuarezHernandez:testpipeline:testing:debian salt home:PSuarezHernandez:testpipeline:debian"
-                        sh "python3 promote_packages.py -s home:PSuarezHernandez:testpipeline:testing:debian -t home:PSuarezHernandez:testpipeline:debian --excluded salt packages"
+                echo 'Promote "products:testing:debian" packages'
+                sh "osc copypac --keep-link home:PSuarezHernandez:testpipeline:testing:debian salt home:PSuarezHernandez:testpipeline:debian"
+                sh "python3 promote_packages.py -s home:PSuarezHernandez:testpipeline:testing:debian -t home:PSuarezHernandez:testpipeline:debian --exclude salt packages"
 
+                dir('/tmp/salt-promote-pipeline-env') {
+                    dir('/tmp/salt-promote-pipeline-env/home:PSuarezHernandez:testpipeline:testing:debian/salt') {
                         echo 'Re-enable services in "products:testing:debian"'
                         sh "cp _service.backup _service"
                         sh "osc rm salt_${salt_version}.orig.tar.gz"

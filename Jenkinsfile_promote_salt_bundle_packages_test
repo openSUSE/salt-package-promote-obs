@@ -1,0 +1,58 @@
+#!/usr/bin/env groovy
+
+// Configure the build properties
+properties([
+    buildDiscarder(logRotator(numToKeepStr: '20')),
+    disableConcurrentBuilds(),
+])
+
+pipeline {
+
+    parameters {
+        string(defaultValue: '', description: 'SUSE Manager maintenance update version that this Salt Bundle update is released with, e.g. 4.2.6', name: 'mu_version')
+    }
+
+    agent { label 'manager-jenkins-node' }
+
+    stages {
+        stage('Initial Checks') {
+            steps {
+                echo "Check that 'openSUSE/test/${mu_version}' branch exists at https://github.com/openSUSE/salt"
+                sh "curl -I --fail https://codeload.github.com/openSUSE/salt/tar.gz/openSUSE/test/${mu_version}"
+
+                echo "Check that 'test/${mu_version}' branch exists at https://github.com/openSUSE/salt-packaging"
+                sh "curl -I --fail https://codeload.github.com/openSUSE/salt-packaging/tar.gz/test/${mu_version}"
+            }
+        }
+
+        stage('Promote debbuild packages for building Salt bundle') {
+            steps {
+                echo 'Promote debbuild package from "home:PSuarezHernandez:testpipeline:testing:debbuild" to "home:PSuarezHernandez:testpipeline:debbuild"'
+                sh 'python3 promote_packages.py -s home:PSuarezHernandez:testpipeline:testing:debbuild -t home:PSuarezHernandez:testpipeline:debbuild packages'
+            }
+        }
+
+        stage('Promote Salt bundle dependencies packages') {
+            steps {
+                echo 'Promote general Salt bundle dependencies packages from "home:PSuarezHernandez:testpipeline:testing" to "home:PSuarezHernandez:testpipeline"'
+                sh 'python3 promote_packages.py -s home:PSuarezHernandez:testpipeline:testing -t home:PSuarezHernandez:testpipeline packages'
+                echo 'Promote Salt bundle dependencies packages for different OSes'
+                sh 'python3 promote_packages.py -s home:PSuarezHernandez:testpipeline:testing -t home:PSuarezHernandez:testpipeline --exclude-subproject home:PSuarezHernandez:testpipeline:testing:debbuild subprojects'
+            }
+        }
+
+        stage('Promote Project Configs for Salt bundle subprojects') {
+            steps {
+                echo "Promote project configs for subprojects at 'home:PSuarezHernandez:testpipeline:testing' to 'home:PSuarezHernandez:testpipeline'"
+                sh 'python3 promote_packages.py -s home:PSuarezHernandez:testpipeline:testing -t home:PSuarezHernandez:testpipeline projectconfigs'
+            }
+        }
+
+        stage('Promote Salt bundle main package (venv-salt-minion)') {
+            steps {
+                echo 'Promote Salt bundle package (venv-salt-minion) from "home:PSuarezHernandez:testpipeline:testing" to "home:PSuarezHernandez:testpipeline"'
+                sh "osc copypac home:PSuarezHernandez:testpipeline:testing venv-salt-minion home:PSuarezHernandez:testpipeline"
+            }
+        }
+    }
+}

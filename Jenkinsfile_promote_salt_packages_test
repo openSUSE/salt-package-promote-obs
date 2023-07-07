@@ -48,7 +48,7 @@ pipeline {
                             echo "Successfully created and pushed 'test/${mu_version}' branch to 'openSUSE/salt-packaging' repository"
                         }
                         else {
-                            if (recreate_salt_mu_branches) {
+                            if (params.recreate_salt_mu_branches) {
                                 // Forcing recreation of MU branches
                                 echo "The MU branches already exist, but pipeline was set to recreate them"
                                 sh "git clone --branch openSUSE/release/${salt_version} --depth 1 https://github.com/openSUSE/salt"

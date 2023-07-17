@@ -21,6 +21,9 @@ from osctiny.extensions.packages import Package
 from osctiny.extensions.projects import Project
 
 
+API_DEFAULT = "https://api.opensuse.org"
+
+
 def copy_packages(client, src, dst, subproject=None, exclude_packages=None):
     pkg_handler = Package(client)
     if subproject is not None:
@@ -86,9 +89,7 @@ def set_project_config(client, prj, config):
 def has_link(client, project, package) -> bool:
     pkg_handler = Package(client)
     pkg_files = pkg_handler.get_files(project, package)
-    linkinfo = etree.fromstring(etree.tostring(pkg_files).decode("utf-8")).find(
-        "linkinfo"
-    )
+    linkinfo = pkg_files.find("linkinfo")
     return linkinfo is not None
 
 
@@ -97,8 +98,8 @@ if __name__ == "__main__":
     parser.add_argument("-s", "--source", dest="src", help="Source Project")
     parser.add_argument("-t", "--target", dest="dst", help="Target Project")
     parser.add_argument(
-        "-A", "--apiurl", dest="url", default="https://api.opensuse.org",
-        help="URL to Build Service API"
+        "-A", "--apiurl", dest="url", default=API_DEFAULT,
+        help=f"URL to Build Service API. (Default: {API_DEFAULT})",
     )
     parser.add_argument(
         "--exclude", dest="exclude_packages", action="append", metavar="PACKAGE_TO_EXCLUDE"

@@ -1,0 +1,3 @@
+osc-tiny
+cached-property
+lxml

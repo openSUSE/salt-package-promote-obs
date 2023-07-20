@@ -25,9 +25,33 @@ pipeline {
             }
         }
 
-        stage('Promote Salt Bundle dependency packages and project configurations for Salt Bundle subprojects') {
+        stage('Promote debbuild packages for building Salt bundle') {
             steps {
-                sh 'python3 promote_packages.py systemsmanagement:saltstack:bundle:testing systemsmanagement:saltstack:bundle'
+                echo 'Promote debbuild package from "systemsmanagement:saltstack:bundle:testing:debbuild" to "systemsmanagement:saltstack:bundle:debbuild"'
+                sh 'python3 promote_packages.py -s systemsmanagement:saltstack:bundle:testing:debbuild -t systemsmanagement:saltstack:bundle:debbuild packages'
+            }
+        }
+
+        stage('Promote Salt bundle dependencies packages') {
+            steps {
+                echo 'Promote general Salt bundle dependencies packages from "systemsmanagement:saltstack:bundle:testing" to "systemsmanagement:saltstack:bundle"'
+                sh 'python3 promote_packages.py -s systemsmanagement:saltstack:bundle:testing -t systemsmanagement:saltstack:bundle --exclude venv-salt-minion packages'
+                echo 'Promote Salt bundle dependencies packages for different OSes'
+                sh 'python3 promote_packages.py -s systemsmanagement:saltstack:bundle:testing -t systemsmanagement:saltstack:bundle --exclude-subproject systemsmanagement:saltstack:bundle:testing:debbuild subprojects'
+            }
+        }
+
+        stage('Promote Project Configs for Salt bundle subprojects') {
+            steps {
+                echo "Promote project configs for subprojects at 'systemsmanagement:saltstack:bundle:testing' to 'systemsmanagement:saltstack:bundle'"
+                sh 'python3 promote_packages.py -s systemsmanagement:saltstack:bundle:testing -t systemsmanagement:saltstack:bundle projectconfigs'
+            }
+        }
+
+        stage('Promote Salt bundle main package (venv-salt-minion)') {
+            steps {
+                echo 'Promote Salt bundle package (venv-salt-minion) from "systemsmanagement:saltstack:bundle:testing" to "systemsmanagement:saltstack:bundle"'
+                sh "osc copypac systemsmanagement:saltstack:bundle:testing venv-salt-minion systemsmanagement:saltstack:bundle"
             }
         }
     }

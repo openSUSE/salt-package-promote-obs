@@ -34,13 +34,13 @@ pipeline {
                     dir('/tmp/salt-promote-pipeline-env') {
                         if (salt_mu_branch != 0 || salt_packaging_mu_branch != 0) {
                             echo "MU branches do not exist. Creating them"
-                            sh "git clone --branch openSUSE/release/${salt_version} --depth 1 https://github.com/openSUSE/salt"
+                            sh "git clone --branch openSUSE/release/${salt_version} --depth 1 git@github.com:openSUSE/salt"
                             dir('/tmp/salt-promote-pipeline-env/salt') {
                                 sh "git switch --create openSUSE/MU/${mu_version}"
                                 sh "git push origin openSUSE/MU/${mu_version}"
                             }
                             echo "Successfully created and pushed 'openSUSE/MU/${mu_version}' branch to 'openSUSE/salt' repository"
-                            sh "git clone --branch release/${salt_version} --depth 1 https://github.com/openSUSE/salt-packaging"
+                            sh "git clone --branch release/${salt_version} --depth 1 git@github.com:openSUSE/salt-packaging"
                             dir('/tmp/salt-promote-pipeline-env/salt-packaging') {
                                 sh "git switch --create MU/${mu_version}"
                                 sh "git push origin MU/${mu_version}"
@@ -51,13 +51,13 @@ pipeline {
                             if (params.recreate_salt_mu_branches) {
                                 // Forcing recreation of MU branches
                                 echo "The MU branches already exist, but pipeline was set to recreate them"
-                                sh "git clone --branch openSUSE/release/${salt_version} https://github.com/openSUSE/salt"
+                                sh "git clone --branch openSUSE/release/${salt_version} git@github.com:openSUSE/salt"
                                 dir('/tmp/salt-promote-pipeline-env/salt') {
                                     sh "git switch --create openSUSE/MU/${mu_version}"
                                     sh "git push --force-with-lease origin openSUSE/MU/${mu_version}"
                                 }
                                 echo "Successfully recreated and pushed 'openSUSE/MU/${mu_version}' branch to 'openSUSE/salt' repository"
-                                sh "git clone --branch release/${salt_version} https://github.com/openSUSE/salt-packaging"
+                                sh "git clone --branch release/${salt_version} git@github.com:openSUSE/salt-packaging"
                                 dir('/tmp/salt-promote-pipeline-env/salt-packaging') {
                                     sh "git switch --create MU/${mu_version}"
                                     sh "git push --force-with-lease origin MU/${mu_version}"

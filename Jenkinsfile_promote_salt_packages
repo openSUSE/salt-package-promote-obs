@@ -72,11 +72,11 @@ pipeline {
                     }
 
                     echo "Check that 'products:testing' and 'products:testing:debian' are not set to MU branches"
-                    sh "! curl https://build.opensuse.org/package/view_file/systemsmanagement:saltstack:products:testing/salt/_service?expand=1 | grep MU/${mu_version}"
-                    sh "! curl https://build.opensuse.org/package/view_file/systemsmanagement:saltstack:products:testing:debian/salt/_service?expand=1 | grep MU/${mu_version}"
+                    sh "! curl https://build.opensuse.org/projects/systemsmanagement:saltstack:products:testing/packages/salt/files/_service?expand=1 | grep MU/${mu_version}"
+                    sh "! curl https://build.opensuse.org/projects/systemsmanagement:saltstack:products:testing:debian/packages/salt/files/_service?expand=1 | grep MU/${mu_version}"
 
                     echo "Check the source tarball is properly named to salt_${salt_version}.orig.tar.gz in 'products:testing:debian'"
-                    sh "curl https://build.opensuse.org/package/view_file/systemsmanagement:saltstack:products:testing:debian/salt/_service?expand=0 | grep salt_${salt_version}.orig.tar.gz"
+                    sh "curl https://build.opensuse.org/projects/systemsmanagement:saltstack:products:testing:debian/packages/salt/files/_service?expand=0 | grep salt_${salt_version}.orig.tar.gz"
                 }
             }
         }

@@ -11,7 +11,7 @@ pipeline {
     parameters {
         string(defaultValue: '3006.0', description: 'Salt version to promote from products:testing to products.', name: 'salt_version')
         string(defaultValue: '', description: 'SUSE Manager maintenance update version that this Salt update is released with, e.g. 4.3.7', name: 'mu_version')
-        booleanParam(name: 'recreate_salt_mu_branches', defaultValue: false, description: 'Advanced: Uncheck this if you want to recreate the already existing MU branches at "openSUSE/salt" repository')
+        booleanParam(name: 'recreate_salt_mu_branches', defaultValue: false, description: 'Advanced: Check this if you want to recreate the already existing MU branches at "openSUSE/salt" repository')
     }
 
     agent { label 'manager-jenkins-node' }
@@ -24,7 +24,7 @@ pipeline {
         }
 
         stage('Initial check and MU branches preparations') {
-	    steps {
+            steps {
                 script {
                     echo "Check that 'openSUSE/MU/${mu_version}' branch exists at https://github.com/openSUSE/salt"
                     salt_mu_branch = sh(script: "curl -I --fail https://codeload.github.com/openSUSE/salt/tar.gz/openSUSE/MU/${mu_version}", returnStatus: true)
@@ -102,7 +102,7 @@ pipeline {
                         sh "osc add salt_${salt_version}.orig.tar.gz"
                         sh "osc commit -m 'Disable services and temporary add tarball before promoting'"
                     }
-		}
+                }
 
                 echo 'Promote "products:testing:debian" packages'
                 sh "osc copypac --keep-link systemsmanagement:saltstack:products:testing:debian salt systemsmanagement:saltstack:products:debian"

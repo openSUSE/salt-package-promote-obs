@@ -18,6 +18,7 @@ import json
 import subprocess
 import sys
 import tempfile
+from typing import List, Dict
 
 import requests
 
@@ -54,7 +55,7 @@ def _fetch_repos_json(git_repo: str, org: str) -> str:
 
 
 def _get_commit_hash(
-    git_repo: str, org: str, repo_name: str, branch: str, headers: dict = {}
+    git_repo: str, org: str, repo_name: str, branch: str, headers: Dict = {}
 ) -> str:
     return requests.get(
         f"https://{git_repo}/api/v1/repos/{org}/{repo_name}/branches/{branch}",
@@ -91,7 +92,7 @@ def _sync_branches_for_repo(repo_name: str):
         _run_git(f"push target +{SOURCE_BRANCH}:{tgt}", cwd=tmpdir)
 
 
-def get_repo_list(exclude: list[str]) -> list[str]:
+def get_repo_list(exclude: List[str]) -> List[str]:
     repos_json = _fetch_repos_json(SOURCE_GIT_REPO, SOURCE_GIT_ORG)
     return [repo["name"] for repo in repos_json if repo["name"] not in REPOS_TO_EXCLUDE]
 

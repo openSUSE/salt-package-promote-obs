@@ -1,20 +1,21 @@
 #!/usr/bin/python3
-#
-# This script takes care of the automation to keep the 
-# packages from https://src.opensuse.org/saltbundle/ in sync
-# with the packages at https://src.suse.de/Galaxy/
-#
-# The SOURCE_BRANCH for each package (at SOURCE_GIT_REPO/SOURCE_GIT_ORG)
-# will be pushed to TARGET_BRANCHES (at TARGET_GIT_REPO/TARGET_GIT_ORG)
-# with force.
-#
-# An access token for TARGET_GIT_REPO/TARGET_GIT_ORG is required
-# with the following permissions:
-#   - "repository/package/organization": read/write
-#   - "user": read only
-#
+'''
+This script takes care of the automation to keep the
+packages from https://src.opensuse.org/saltbundle/ in sync
+with the packages at https://src.suse.de/Galaxy/
+
+The SOURCE_BRANCH for each package (at SOURCE_GIT_REPO/SOURCE_GIT_ORG)
+will be pushed to TARGET_BRANCHES (at TARGET_GIT_REPO/TARGET_GIT_ORG)
+with force.
+
+An access token for TARGET_GIT_REPO/TARGET_GIT_ORG is required
+with the following permissions:
+  - "repository/package/organization": read/write
+  - "user": read only
+'''
 
 import json
+import os
 import subprocess
 import sys
 import tempfile
@@ -30,7 +31,7 @@ TARGET_GIT_REPO = "src.suse.de"
 TARGET_GIT_ORG = "Galaxy"
 TARGET_BRANCHES = ["mlmtools-main", "mlmtools-stable"]
 
-TARGET_REPO_TOKEN = "PUT-YOUR-ACCESS-TOKEN-HERE"
+TARGET_REPO_TOKEN = os.environ.get("GITEA_TOKEN", "PUT-YOUR-ACCESS-TOKEN-HERE")
 AUTH_HEADERS = {"Authorization": f"Bearer {TARGET_REPO_TOKEN}"}
 
 REPOS_TO_EXCLUDE = ["_ObsPrj"]

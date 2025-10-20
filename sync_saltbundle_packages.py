@@ -1,5 +1,5 @@
 #!/usr/bin/python3
-'''
+"""
 This script takes care of the automation to keep the
 packages from https://src.opensuse.org/saltbundle/ in sync
 with the packages at https://src.suse.de/Galaxy/
@@ -12,14 +12,14 @@ An access token for TARGET_GIT_REPO/TARGET_GIT_ORG is required
 with the following permissions:
   - "repository/package/organization": read/write
   - "user": read only
-'''
+"""
 
 import json
 import os
 import subprocess
 import sys
 import tempfile
-from typing import List, Dict
+from typing import Dict, List
 
 import requests
 
@@ -38,6 +38,9 @@ REPOS_TO_EXCLUDE = ["_ObsPrj"]
 
 
 def _fetch_repos_json(git_repo: str, org: str) -> str:
+    """
+    Use gitea API to fetch the list of repositories for a given organization.
+    """
     output = []
     keep_fetching = True
     page = 1
@@ -58,6 +61,9 @@ def _fetch_repos_json(git_repo: str, org: str) -> str:
 def _get_commit_hash(
     git_repo: str, org: str, repo_name: str, branch: str, headers: Dict = {}
 ) -> str:
+    """
+    Get latest commit hash for a given branch name
+    """
     ret = None
     try:
         ret = requests.get(
@@ -71,6 +77,9 @@ def _get_commit_hash(
 
 
 def _run_git(command: str, cwd: str = None):
+    """
+    Run a git command
+    """
     _cmd = f"git {command}"
     try:
         result = subprocess.run(
@@ -85,6 +94,9 @@ def _run_git(command: str, cwd: str = None):
 
 
 def _sync_branches_for_repo(repo_name: str):
+    """
+    Synchronize TARGET_BRANCHES according to SOURCE_BRANCH with force
+    """
     _run_git("init --bare --object-format=sha256", cwd=tmpdir)
     _run_git(
         f"remote add source https://{SOURCE_GIT_REPO}/{SOURCE_GIT_ORG}/{repo_name}",
@@ -100,6 +112,9 @@ def _sync_branches_for_repo(repo_name: str):
 
 
 def get_repo_list(exclude: List[str]) -> List[str]:
+    """
+    Returns the list of repository names to process without excluded repositories
+    """
     repos_json = _fetch_repos_json(SOURCE_GIT_REPO, SOURCE_GIT_ORG)
     return [repo["name"] for repo in repos_json if repo["name"] not in REPOS_TO_EXCLUDE]
 

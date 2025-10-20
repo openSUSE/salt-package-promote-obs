@@ -57,10 +57,16 @@ def _fetch_repos_json(git_repo: str, org: str) -> str:
 def _get_commit_hash(
     git_repo: str, org: str, repo_name: str, branch: str, headers: Dict = {}
 ) -> str:
-    return requests.get(
-        f"https://{git_repo}/api/v1/repos/{org}/{repo_name}/branches/{branch}",
-        headers=headers,
-    ).json()["commit"]["id"]
+    ret = None
+    try:
+        ret = requests.get(
+            f"https://{git_repo}/api/v1/repos/{org}/{repo_name}/branches/{branch}",
+            headers=headers,
+        ).json()["commit"]["id"]
+        return ret
+    except Exception:
+        print("---> ERROR: cannot get commit hash. Check configured access token!")
+        sys.exit(1)
 
 
 def _run_git(command: str, cwd: str = None):

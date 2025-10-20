@@ -107,8 +107,6 @@ def get_repo_list(exclude: List[str]) -> List[str]:
 with tempfile.TemporaryDirectory() as tmpdir:
     stats = {"processed": 0, "synced": []}
     for repo in get_repo_list(REPOS_TO_EXCLUDE):
-        if "deb" not in repo:
-            continue
         print(
             f"Processing package https://{SOURCE_GIT_REPO}/{SOURCE_GIT_ORG}/{repo} ..."
         )

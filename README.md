@@ -27,3 +27,7 @@ This script is used by the pipelines to take care of the different stages of the
 # pip3 install -r requirements.txt
 # python3 promote_packages.py --help
 ```
+
+## sync_saltbundle_packages.py
+
+This script takes care of the automation to keep the packages from https://src.opensuse.org/saltbundle/ in sync with the packages we have at https://src.suse.de/Galaxy/

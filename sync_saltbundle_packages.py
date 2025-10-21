@@ -99,22 +99,22 @@ def _run_git(command: str, cwd: str = None):
         sys.exit(1)
 
 
-def _sync_branches_for_repo(repo_name: str):
+def _sync_branches_for_repo(repo_name: str, cwd: str):
     """
     Synchronize TARGET_BRANCHES according to SOURCE_BRANCH with force
     """
-    _run_git("init --bare --object-format=sha256", cwd=tmpdir)
+    _run_git("init --bare --object-format=sha256", cwd=cwd)
     _run_git(
         f"remote add source https://{SOURCE_GIT_REPO}/{SOURCE_GIT_ORG}/{repo_name}",
-        cwd=tmpdir,
+        cwd=cwd,
     )
     _run_git(
         f"remote add target https://{TARGET_REPO_TOKEN}@{TARGET_GIT_REPO}/{TARGET_GIT_ORG}/{repo_name}",
-        cwd=tmpdir,
+        cwd=cwd,
     )
-    _run_git(f"fetch source {SOURCE_BRANCH}:{SOURCE_BRANCH}", cwd=tmpdir)
+    _run_git(f"fetch source {SOURCE_BRANCH}:{SOURCE_BRANCH}", cwd=cwd)
     for tgt in TARGET_BRANCHES:
-        _run_git(f"push target +{SOURCE_BRANCH}:{tgt}", cwd=tmpdir)
+        _run_git(f"push target +{SOURCE_BRANCH}:{tgt}", cwd=cwd)
 
 
 def get_repo_list(exclude: List[str]) -> List[str]:
@@ -125,52 +125,48 @@ def get_repo_list(exclude: List[str]) -> List[str]:
     return [repo["name"] for repo in repos_json if repo["name"] not in REPOS_TO_EXCLUDE]
 
 
-with tempfile.TemporaryDirectory() as tmpdir:
-    stats = {"processed": 0, "synced": []}
-    for repo in get_repo_list(REPOS_TO_EXCLUDE):
+stats = {"processed": 0, "synced": []}
+for repo in get_repo_list(REPOS_TO_EXCLUDE):
+    print(f"Processing package https://{SOURCE_GIT_REPO}/{SOURCE_GIT_ORG}/{repo} ...")
+    stats["processed"] += 1
+
+    source_hash = _get_commit_hash(SOURCE_GIT_REPO, SOURCE_GIT_ORG, repo, SOURCE_BRANCH)
+    print(f"---> HEAD ({SOURCE_BRANCH}): {source_hash}")
+    force_sync = False
+    for tgt in TARGET_BRANCHES:
+        target_hash = _get_commit_hash(
+            TARGET_GIT_REPO, TARGET_GIT_ORG, repo, tgt, AUTH_HEADERS
+        )
+        print(f"---> HEAD ({tgt}): {target_hash}")
+        if source_hash != target_hash:
+            print(f"---> YAY!!! We need to sync branch {tgt} here!")
+            force_sync = True
+    if force_sync:
         print(
-            f"Processing package https://{SOURCE_GIT_REPO}/{SOURCE_GIT_ORG}/{repo} ..."
+            f"---> A sync is needed here against https://{TARGET_GIT_REPO}/{TARGET_GIT_ORG}/{repo} !!!"
         )
-        stats["processed"] += 1
-
-        source_hash = _get_commit_hash(
-            SOURCE_GIT_REPO, SOURCE_GIT_ORG, repo, SOURCE_BRANCH
-        )
-        print(f"---> HEAD ({SOURCE_BRANCH}): {source_hash}")
-        force_sync = False
-        for tgt in TARGET_BRANCHES:
-            target_hash = _get_commit_hash(
-                TARGET_GIT_REPO, TARGET_GIT_ORG, repo, tgt, AUTH_HEADERS
-            )
-            print(f"---> HEAD ({tgt}): {target_hash}")
-            if source_hash != target_hash:
-                print(f"---> YAY!!! We need to sync branch {tgt} here!")
-                force_sync = True
-        if force_sync:
-            print(
-                f"---> A sync is needed here against https://{TARGET_GIT_REPO}/{TARGET_GIT_ORG}/{repo} !!!"
-            )
-            try:
-                _sync_branches_for_repo(repo)
+        try:
+            with tempfile.TemporaryDirectory() as tmpdir:
+                _sync_branches_for_repo(repo, tmpdir)
                 stats["synced"].append(repo)
-            except Exception as exc:
-                print(f"---> ERROR: {exc}")
-                sys.exit(1)
-            print(
-                f"---> Pushed branch '{SOURCE_BRANCH}' from {SOURCE_GIT_REPO} to branches '{TARGET_BRANCHES}' at {TARGET_GIT_REPO}"
-            )
-            print("---> Successfully synced!")
-        else:
-            print("---> Nothing to sync here.")
-        print()
-
-    print("----------------------------------------------------------------")
-    print(f" Packages that needed a synced: ", end="")
-    if not stats["synced"]:
-        print("(none)")
+        except Exception as exc:
+            print(f"---> ERROR: {exc}")
+            sys.exit(1)
+        print(
+            f"---> Pushed branch '{SOURCE_BRANCH}' from {SOURCE_GIT_REPO} to branches '{TARGET_BRANCHES}' at {TARGET_GIT_REPO}"
+        )
+        print("---> Successfully synced!")
     else:
-        for pkg in stats["synced"]:
-            print()
-            print(f" * {pkg}")
-    print(f" Total packages already in sync: {stats['processed']}")
-    print("----------------------------------------------------------------")
+        print("---> Nothing to sync here.")
+    print()
+
+print("----------------------------------------------------------------")
+print(f" Packages that needed a synced: ", end="")
+if not stats["synced"]:
+    print("(none)")
+else:
+    for pkg in stats["synced"]:
+        print()
+        print(f" * {pkg}")
+print(f" Total packages already in sync: {stats['processed']}")
+print("----------------------------------------------------------------")

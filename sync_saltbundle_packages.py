@@ -165,8 +165,8 @@ print(f" Packages that needed a synced: ", end="")
 if not stats["synced"]:
     print("(none)")
 else:
+    print()
     for pkg in stats["synced"]:
-        print()
         print(f" * {pkg}")
 print(f" Total packages already in sync: {stats['processed']}")
 print("----------------------------------------------------------------")

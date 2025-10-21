@@ -83,7 +83,13 @@ def _run_git(command: str, cwd: str = None):
     _cmd = f"git {command}"
     try:
         result = subprocess.run(
-            _cmd, shell=True, check=True, capture_output=True, text=True, cwd=cwd
+            _cmd,
+            shell=True,
+            check=True,
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE,
+            universal_newlines=True,
+            cwd=cwd,
         )
         return result
     except subprocess.CalledProcessError as exc:

@@ -52,7 +52,7 @@ def _fetch_repos_json(git_repo: str, org: str) -> str:
         if not ret:
             keep_fetching = False
         else:
-            page = page + 1
+            page += 1
             output.extend(ret)
 
     return output

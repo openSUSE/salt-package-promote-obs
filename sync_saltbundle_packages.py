@@ -167,7 +167,7 @@ for repo in get_repo_list(REPOS_TO_EXCLUDE):
     print()
 
 print("----------------------------------------------------------------")
-print(f" Packages that needed a synced: ", end="")
+print(f" Packages that need to be synced: ", end="")
 if not stats["synced"]:
     print("(none)")
 else:

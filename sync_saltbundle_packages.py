@@ -65,15 +65,11 @@ def _get_commit_hash(
     Get latest commit hash for a given branch name
     """
     ret = None
-    try:
-        ret = requests.get(
-            f"https://{git_repo}/api/v1/repos/{org}/{repo_name}/branches/{branch}",
-            headers=headers,
-        ).json()["commit"]["id"]
-        return ret
-    except Exception:
-        print("---> ERROR: cannot get commit hash. Check configured access token!")
-        sys.exit(1)
+    ret = requests.get(
+        f"https://{git_repo}/api/v1/repos/{org}/{repo_name}/branches/{branch}",
+        headers=headers,
+    ).json()["commit"]["id"]
+    return ret
 
 
 def _run_git(command: str, cwd: str = None):
@@ -81,22 +77,16 @@ def _run_git(command: str, cwd: str = None):
     Run a git command
     """
     _cmd = f"git {command}"
-    try:
-        result = subprocess.run(
-            _cmd,
-            shell=True,
-            check=True,
-            stdout=subprocess.PIPE,
-            stderr=subprocess.PIPE,
-            universal_newlines=True,
-            cwd=cwd,
-        )
-        return result
-    except subprocess.CalledProcessError as exc:
-        print(f"   Git Command failed: {exc.cmd}")
-        print(f"   STDOUT: {exc.stdout}")
-        print(f"   STDERR: {exc.stderr}")
-        sys.exit(1)
+    result = subprocess.run(
+        _cmd,
+        shell=True,
+        check=True,
+        stdout=subprocess.PIPE,
+        stderr=subprocess.PIPE,
+        universal_newlines=True,
+        cwd=cwd,
+    )
+    return result
 
 
 def _sync_branches_for_repo(repo_name: str, cwd: str):
@@ -125,12 +115,20 @@ def get_repo_list(exclude: List[str]) -> List[str]:
     return [repo["name"] for repo in repos_json if repo["name"] not in REPOS_TO_EXCLUDE]
 
 
-stats = {"processed": 0, "synced": []}
+stats = {"processed": 0, "synced": [], "errors": []}
 for repo in get_repo_list(REPOS_TO_EXCLUDE):
     print(f"Processing package https://{SOURCE_GIT_REPO}/{SOURCE_GIT_ORG}/{repo} ...")
     stats["processed"] += 1
 
-    source_hash = _get_commit_hash(SOURCE_GIT_REPO, SOURCE_GIT_ORG, repo, SOURCE_BRANCH)
+    try:
+        source_hash = _get_commit_hash(
+            SOURCE_GIT_REPO, SOURCE_GIT_ORG, repo, SOURCE_BRANCH
+        )
+    except Exception:
+        print("---> ERROR: cannot get commit hash. Check configured access token!")
+        stats["errors"].append(repo)
+        continue
+
     print(f"---> HEAD ({SOURCE_BRANCH}): {source_hash}")
     force_sync = False
     for tgt in TARGET_BRANCHES:
@@ -147,11 +145,19 @@ for repo in get_repo_list(REPOS_TO_EXCLUDE):
         )
         try:
             with tempfile.TemporaryDirectory() as tmpdir:
-                _sync_branches_for_repo(repo, tmpdir)
-                stats["synced"].append(repo)
+                try:
+                    _sync_branches_for_repo(repo, tmpdir)
+                    stats["synced"].append(repo)
+                except subprocess.CalledProcessError as exc:
+                    print(f"   Git Command failed: {exc.cmd}")
+                    print(f"   STDOUT: {exc.stdout}")
+                    print(f"   STDERR: {exc.stderr}")
+                    stats["errors"].append(repo)
+                    continue
         except Exception as exc:
             print(f"---> ERROR: {exc}")
-            sys.exit(1)
+            stats["errors"].append(repo)
+            continue
         print(
             f"---> Pushed branch '{SOURCE_BRANCH}' from {SOURCE_GIT_REPO} to branches '{TARGET_BRANCHES}' at {TARGET_GIT_REPO}"
         )
@@ -168,5 +174,12 @@ else:
     print()
     for pkg in stats["synced"]:
         print(f" * {pkg}")
-print(f" Total packages already in sync: {stats['processed']}")
+if stats["errors"]:
+    print(" Packages with errors:")
+    for pkg in stats["errors"]:
+        print(f" * {pkg}")
+print(f" Total packages processed: {stats['processed']}")
 print("----------------------------------------------------------------")
+
+if stats["errors"]:
+    sys.exit(1)

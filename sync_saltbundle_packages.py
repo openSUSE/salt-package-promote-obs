@@ -114,7 +114,7 @@ def _sync_branches_for_repo(repo_name: str, cwd: str):
     )
     _run_git(f"fetch source {SOURCE_BRANCH}:{SOURCE_BRANCH}", cwd=cwd)
     for tgt in TARGET_BRANCHES:
-        _run_git(f"push target +{SOURCE_BRANCH}:{tgt}", cwd=cwd)
+        _run_git(f"push target {SOURCE_BRANCH}:{tgt}", cwd=cwd)
 
 
 def get_repo_list(exclude: List[str]) -> List[str]:

@@ -155,6 +155,7 @@ with tempfile.TemporaryDirectory() as tmpdir:
                 stats["synced"].append(repo)
             except Exception as exc:
                 print(f"---> ERROR: {exc}")
+                sys.exit(1)
             print(
                 f"---> Pushed branch '{SOURCE_BRANCH}' from {SOURCE_GIT_REPO} to branches '{TARGET_BRANCHES}' at {TARGET_GIT_REPO}"
             )

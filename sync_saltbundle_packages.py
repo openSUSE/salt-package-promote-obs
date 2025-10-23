@@ -5,8 +5,7 @@ packages from https://src.opensuse.org/saltbundle/ in sync
 with the packages at https://src.suse.de/Galaxy/
 
 The SOURCE_BRANCH for each package (at SOURCE_GIT_REPO/SOURCE_GIT_ORG)
-will be pushed to TARGET_BRANCHES (at TARGET_GIT_REPO/TARGET_GIT_ORG)
-with force.
+will be pushed to TARGET_BRANCHES (at TARGET_GIT_REPO/TARGET_GIT_ORG).
 
 An access token for TARGET_GIT_REPO/TARGET_GIT_ORG is required
 with the following permissions:
@@ -91,7 +90,7 @@ def _run_git(command: str, cwd: str = None):
 
 def _sync_branches_for_repo(repo_name: str, cwd: str):
     """
-    Synchronize TARGET_BRANCHES according to SOURCE_BRANCH with force
+    Synchronize TARGET_BRANCHES according to SOURCE_BRANCH
     """
     _run_git("init --bare --object-format=sha256", cwd=cwd)
     _run_git(

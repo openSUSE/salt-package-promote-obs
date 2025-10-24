@@ -87,8 +87,7 @@ def promote_project_config(
     ).returncode
     if not changes_exist:
         return False
-    for line in run_git("diff --staged", cwd=cwd).stdout.decode().split("\n"):
-        print(f"---> {line}")
+    print(run_git("diff --staged", cwd=cwd).stdout)
     run_git(f"commit -m {COMMIT_MESSAGE}", cwd=cwd)
     run_git(f"push origin {target_branch}", cwd=cwd)
     return True
@@ -112,17 +111,14 @@ def promote_package(
         cwd=cwd,
     )
     run_git(
-        f"remote add target https://{auth_token}@{target_git_server}/{target_org}/{repo_name}",
+        f"remote add target https://{auth_token}@{git_server}/{org}/{repo_name}",
         cwd=cwd,
     )
     run_git(f"fetch source {source_branch}:{source_branch}", cwd=cwd)
     run_git(f"fetch target {target_branch}:{target_branch}", cwd=cwd)
-    for line in (
-        run_git(f"diff target/{target_branch}..source/{source_branch}", cwd=cwd)
-        .stdout.decode()
-        .split("\n")
-    ):
-        print(f"---> {line}")
+    print(
+        run_git(f"diff target/{target_branch}..source/{source_branch}", cwd=cwd).stdout
+    )
     run_git(f"push target {source_branch}:{target_branch}", cwd=cwd)
 
 

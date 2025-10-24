@@ -57,7 +57,7 @@ for repo in scmutils.get_repo_list(
 
     if source_hash != target_hash:
         print(f"---> YAY!!! We need to promote '{SOURCE_BRANCH}' branch here!")
-        print("---> Here is the diff:")
+        print("---> Here is the diff:\n")
         stats["to_sync"].append(repo)
         try:
             with tempfile.TemporaryDirectory() as tmpdir:

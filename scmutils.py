@@ -141,16 +141,16 @@ def sync_branches_for_repo(
     """
     run_git("init --bare --object-format=sha256", cwd=cwd)
     run_git(
-      f"remote add source https://{source_git_server}/{source_org}/{repo_name}",
-      cwd=cwd,
+        f"remote add source https://{source_git_server}/{source_org}/{repo_name}",
+        cwd=cwd,
     )
     run_git(
-      f"remote add target https://{auth_token}@{target_git_server}/{target_org}/{repo_name}",
-      cwd=cwd,
+        f"remote add target https://{auth_token}@{target_git_server}/{target_org}/{repo_name}",
+        cwd=cwd,
     )
     run_git(f"fetch source {source_branch}:{source_branch}", cwd=cwd)
     for tgt in target_branches:
-      run_git(f"push target {source_branch}:{tgt}", cwd=cwd)
+        run_git(f"push target {source_branch}:{tgt}", cwd=cwd)
 
 
 def get_repo_list(git_server: str, org: str, exclude: List[str] = None) -> List[str]:

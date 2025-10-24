@@ -84,6 +84,7 @@ for repo in scmutils.get_repo_list(
                         target_git_server=TARGET_GIT_SERVER,
                         target_org=TARGET_GIT_ORG,
                         target_branches=TARGET_BRANCHES,
+                        auth_token=TARGET_REPO_TOKEN,
                         cwd=tmpdir,
                     )
                     stats["synced"].append(repo)

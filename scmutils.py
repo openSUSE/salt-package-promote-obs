@@ -135,6 +135,7 @@ def sync_branches_for_repo(
     target_git_server: str,
     target_org: str,
     target_branches: List[str],
+    auth_token: str,
     cwd: str,
 ):
     """

@@ -87,6 +87,7 @@ def promote_project_config(
     ).returncode
     if not changes_exist:
         return False
+    print("---> Here is the diff:\n")
     print(run_git("diff --staged", cwd=cwd).stdout)
     run_git(f"commit -m {COMMIT_MESSAGE}", cwd=cwd)
     run_git(f"push origin {target_branch}", cwd=cwd)

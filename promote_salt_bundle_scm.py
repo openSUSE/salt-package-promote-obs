@@ -28,7 +28,7 @@ AUTH_HEADERS = {"Authorization": f"Bearer {TARGET_REPO_TOKEN}"}
 REPOS_TO_EXCLUDE = ["_ObsPrj"]
 
 
-stats = {"processed": 0, "promoted": [], "to_sync": [], "errors": []}
+stats = {"processed": 0, "promoted": [], "to_promote": [], "errors": []}
 for repo in scmutils.get_repo_list(
     git_server=SOURCE_GIT_SERVER, org=SOURCE_GIT_ORG, exclude=REPOS_TO_EXCLUDE
 ):
@@ -58,7 +58,7 @@ for repo in scmutils.get_repo_list(
     if source_hash != target_hash:
         print(f"---> YAY!!! We need to promote '{SOURCE_BRANCH}' branch here!")
         print("---> Here is the diff:\n")
-        stats["to_sync"].append(repo)
+        stats["to_promote"].append(repo)
         try:
             with tempfile.TemporaryDirectory() as tmpdir:
                 try:
@@ -124,19 +124,22 @@ print()
 print("----------------------------------------------------------------")
 print(f" Total packages processed: {stats['processed']}")
 print(" Packages that required to be promoted: ", end="")
-if not stats["to_sync"]:
+if not stats["to_promote"]:
     print("(none)")
 else:
-    print(len(stats["to_sync"]))
+    print(len(stats["to_promote"]))
 print(" Packages that were successfully promoted: ", end="")
 if not stats["promoted"]:
     print("(none)")
 else:
-    print()
+    print(len(stats["promoted"]))
     for pkg in stats["promoted"]:
         print(f" * {pkg}")
-if stats["errors"]:
-    print(" Packages with errors:")
+print(" Packages with errors: ", end="")
+if not stats["errors"]:
+    print("(none)")
+else:
+    print(len(stats["errors"]))
     for pkg in stats["errors"]:
         print(f" * ERROR {pkg}")
 print("----------------------------------------------------------------")

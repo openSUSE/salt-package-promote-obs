@@ -118,11 +118,14 @@ print(" Packages that were successfully synced: ", end="")
 if not stats["synced"]:
     print("(none)")
 else:
-    print()
+    print(len(stats["synced"]))
     for pkg in stats["synced"]:
         print(f" * {pkg}")
-if stats["errors"]:
-    print(" Packages with errors:")
+print(" Packages with errors: ", end="")
+if not stats["errors"]:
+    print("(none)")
+else:
+    print(len(stats["errors"]))
     for pkg in stats["errors"]:
         print(f" * ERROR {pkg}")
 print("----------------------------------------------------------------")

@@ -88,7 +88,7 @@ def promote_project_config(
     if not changes_exist:
         return False
     run_git(f"commit -m {COMMIT_MESSAGE}", cwd=cwd)
-    # run_git(f"push origin {target_branch}", cwd=cwd)
+    run_git(f"push origin {target_branch}", cwd=cwd)
     return True
 
 
@@ -104,18 +104,17 @@ def promote_package(
     """
     Promote SOURCE_BRANCH to TARGET_BRANCH
     """
-    pass
-    # run_git("init --bare --object-format=sha256", cwd=cwd)
-    # run_git(
-    #    f"remote add source https://{git_server}/{org}/{repo_name}",
-    #    cwd=cwd,
-    # )
-    # run_git(
-    #   f"remote add target https://{auth_token}@{target_git_server}/{target_org}/{repo_name}",
-    #   cwd=cwd,
-    # )
-    # run_git(f"fetch source {source_branch}:{source_branch}", cwd=cwd)
-    # run_git(f"push target {source_branch}:{target_branch}", cwd=cwd)
+    run_git("init --bare --object-format=sha256", cwd=cwd)
+    run_git(
+       f"remote add source https://{git_server}/{org}/{repo_name}",
+       cwd=cwd,
+    )
+    run_git(
+      f"remote add target https://{auth_token}@{target_git_server}/{target_org}/{repo_name}",
+      cwd=cwd,
+    )
+    run_git(f"fetch source {source_branch}:{source_branch}", cwd=cwd)
+    run_git(f"push target {source_branch}:{target_branch}", cwd=cwd)
 
 
 def sync_branches_for_repo(
@@ -131,19 +130,18 @@ def sync_branches_for_repo(
     """
     Synchronize target_branches according to source_branch
     """
-    pass
-    # run_git("init --bare --object-format=sha256", cwd=cwd)
-    # run_git(
-    #   f"remote add source https://{source_git_server}/{source_org}/{repo_name}",
-    #   cwd=cwd,
-    # )
-    # run_git(
-    #   f"remote add target https://{auth_token}@{target_git_server}/{target_org}/{repo_name}",
-    #   cwd=cwd,
-    # )
-    # run_git(f"fetch source {source_branch}:{source_branch}", cwd=cwd)
-    # for tgt in target_branches:
-    #   run_git(f"push target {source_branch}:{tgt}", cwd=cwd)
+    run_git("init --bare --object-format=sha256", cwd=cwd)
+    run_git(
+      f"remote add source https://{source_git_server}/{source_org}/{repo_name}",
+      cwd=cwd,
+    )
+    run_git(
+      f"remote add target https://{auth_token}@{target_git_server}/{target_org}/{repo_name}",
+      cwd=cwd,
+    )
+    run_git(f"fetch source {source_branch}:{source_branch}", cwd=cwd)
+    for tgt in target_branches:
+      run_git(f"push target {source_branch}:{tgt}", cwd=cwd)
 
 
 def get_repo_list(git_server: str, org: str, exclude: List[str] = None) -> List[str]:

@@ -76,6 +76,7 @@ def promote_project_config(
     COMMIT_MESSAGE = f"Merge changes from {source_branch} branch"
     PROJCONFIG_FILE = "_config"
     REPONAME = "_ObsPrj"
+    COMMIT_AUTHOR = "Salt Bundle promote pipeline <salt-ci@suse.de>"
     run_git(
         f"clone https://{auth_token}@{git_server}/{org}/{REPONAME} -b {source_branch} .",
         cwd=cwd,
@@ -89,7 +90,10 @@ def promote_project_config(
         return False
     print("---> Here is the diff:\n")
     print(run_git("diff --staged", cwd=cwd).stdout)
-    run_git(f"commit -m {COMMIT_MESSAGE}", cwd=cwd)
+    run_git(
+        f"commit -m '{COMMIT_MESSAGE}' --author='{COMMIT_AUTHOR}' --no-gpg-sign",
+        cwd=cwd,
+    )
     run_git(f"push origin {target_branch}", cwd=cwd)
     return True
 

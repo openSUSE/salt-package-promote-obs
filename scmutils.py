@@ -45,7 +45,7 @@ def get_commit_hash(
     return ret
 
 
-def run_git(command: str, cwd: str = None):
+def run_git(command: str, cwd: str = None, check: bool = True):
     """
     Run a git command
     """
@@ -53,13 +53,43 @@ def run_git(command: str, cwd: str = None):
     result = subprocess.run(
         _cmd,
         shell=True,
-        check=True,
+        check=check,
         stdout=subprocess.PIPE,
         stderr=subprocess.PIPE,
         universal_newlines=True,
         cwd=cwd,
     )
     return result
+
+
+def promote_project_config(
+    git_server: str,
+    org: str,
+    source_branch: str,
+    target_branch: str,
+    auth_token: str,
+    cwd: str,
+):
+    """
+    Copy changes on _config file from SOURCE_BRANCH to TARGET_BRANCH
+    """
+    COMMIT_MESSAGE = f"Merge changes from {source_branch} branch"
+    PROJCONFIG_FILE = "_config"
+    REPONAME = "_ObsPrj"
+    run_git(
+        f"clone https://{auth_token}@{git_server}/{org}/{REPONAME} -b {source_branch} .",
+        cwd=cwd,
+    )
+    run_git(f"checkout {target_branch}", cwd=cwd)
+    run_git(f"checkout {source_branch} -- {PROJCONFIG_FILE}", cwd=cwd)
+    changes_exist = run_git(
+        f"diff --cached --quiet {PROJCONFIG_FILE}", check=False, cwd=cwd
+    ).returncode
+    if not changes_exist:
+        return False
+    run_git(f"commit -m {COMMIT_MESSAGE}", cwd=cwd)
+    # run_git(f"push origin {target_branch}", cwd=cwd)
+    return True
 
 
 def promote_package(

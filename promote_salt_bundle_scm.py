@@ -92,6 +92,35 @@ for repo in scmutils.get_repo_list(
     print()
 
 print("----------------------------------------------------------------")
+try:
+    with tempfile.TemporaryDirectory() as tmpdir:
+        try:
+            print(
+                f"Promoting possible changes in Project Configs (_config) at https://{SOURCE_GIT_SERVER}/{SOURCE_GIT_ORG}/_ObsPrj ..."
+            )
+            if scmutils.promote_project_config(
+                git_server=SOURCE_GIT_SERVER,
+                org=SOURCE_GIT_ORG,
+                source_branch=SOURCE_BRANCH,
+                target_branch=TARGET_BRANCH,
+                auth_token=TARGET_REPO_TOKEN,
+                cwd=tmpdir,
+            ):
+                print("---> Successfully promoted!")
+            else:
+                print("---> Nothing to promote here.")
+        except subprocess.CalledProcessError as exc:
+            print("---> ERROR: promoting project configs!")
+            print(f"   Git Command failed: {exc.cmd}")
+            print(f"   STDOUT: {exc.stdout}")
+            print(f"   STDERR: {exc.stderr}")
+            stats["errors"].append("_ObsPrj/_config")
+except Exception as exc:
+    print(f"---> ERROR: {exc}")
+    stats["errors"].append("_ObsPrj/_config")
+
+print()
+print("----------------------------------------------------------------")
 print(f" Total packages processed: {stats['processed']}")
 print(" Packages that required to be promoted: ", end="")
 if not stats["to_sync"]:

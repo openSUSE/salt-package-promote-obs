@@ -23,8 +23,13 @@ def fetch_repos_json(git_server: str, org: str) -> str:
             f"https://{git_server}/api/v1/users/{org}/repos?limit=100&page={page}"
         ).json()
         if not ret:
+            # Empty pages are []
             keep_fetching = False
+        elif isinstance(ret, dict):
+            # Errors are {"message": ...}
+            raise Exception(f"ERROR fetching list of repos: {ret}")
         else:
+            # Valid return: [{...}, {...}]
             page += 1
             output.extend(ret)
 

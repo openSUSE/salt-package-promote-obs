@@ -26,7 +26,7 @@ SOURCE_BRANCH = "bundle"
 
 TARGET_GIT_SERVER = "src.suse.de"
 TARGET_GIT_ORG = "Galaxy"
-TARGET_BRANCHES = ["mlmtools-main", "mlmtools-stable"]
+TARGET_BRANCHES = ["devel-main", "devel-stable"]
 
 TARGET_REPO_TOKEN = os.environ.get("GITEA_TOKEN", "PUT-YOUR-ACCESS-TOKEN-HERE")
 AUTH_HEADERS = {"Authorization": f"Bearer {TARGET_REPO_TOKEN}"}

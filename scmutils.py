@@ -167,4 +167,8 @@ def get_repo_list(git_server: str, org: str, exclude: List[str] = None) -> List[
     if not exclude:
         exclude = []
     repos_json = fetch_repos_json(git_server, org)
-    return [repo["name"] for repo in repos_json if repo["name"] not in exclude]
+    return [
+        repo["name"]
+        for repo in repos_json
+        if (repo["name"] not in exclude) and (repo["archived"] is False)
+    ]

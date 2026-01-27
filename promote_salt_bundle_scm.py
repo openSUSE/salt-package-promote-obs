@@ -25,7 +25,7 @@ TARGET_BRANCH = "bundle"
 TARGET_REPO_TOKEN = os.environ.get("GITEA_TOKEN", "PUT-YOUR-ACCESS-TOKEN-HERE")
 AUTH_HEADERS = {"Authorization": f"Bearer {TARGET_REPO_TOKEN}"}
 
-REPOS_TO_EXCLUDE = ["_ObsPrj"]
+REPOS_TO_EXCLUDE = ["_ObsPrj", ".profile"]
 
 
 stats = {"processed": 0, "promoted": [], "to_promote": [], "errors": []}

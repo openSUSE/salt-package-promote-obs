@@ -18,6 +18,11 @@ if [ "$#" -ne 4 ]; then
     exit 1
 fi
 
+if [ ! -v GITEA_TOKEN ]; then
+    echo "Error: You must define GITEA_TOKEN environment variable"
+    exit 1
+fi
+
 OBS_PROJECT="$1"
 OBS_PACKAGE="$2"
 GIT_REPO_URL="$3"
@@ -55,7 +60,7 @@ GIT_DIR="$WORKSPACE/git_repo"
 
 # Clone the specific branch of the repository
 echo "Cloning repository..."
-git clone --branch "$GIT_BRANCH" --depth 1 "$GIT_REPO_URL" "$GIT_DIR" > /dev/null
+git clone --branch "$GIT_BRANCH" --depth 1 "${GIT_REPO_URL/:\/\//:\/\/${GITEA_TOKEN}@}" "$GIT_DIR" > /dev/null
 
 rsync -av --delete \
     --exclude='.git' \

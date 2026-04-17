@@ -12,6 +12,7 @@ pipeline {
         string(defaultValue: '3006.0', description: 'Salt version to promote from products:testing to products.', name: 'salt_version')
         string(defaultValue: '', description: 'SUSE Manager maintenance update version that this Salt update is released with, e.g. 4.3.7', name: 'mu_version')
         booleanParam(name: 'recreate_salt_mu_branches', defaultValue: false, description: 'Advanced: Check this if you want to recreate the already existing MU branches at "openSUSE/salt" repository')
+        booleanParam(name: 'disable_branch_check', defaultValue: false, description: 'Advanced: Disable checking that "products:testing" and "products:testing:debian" are not set to MU branches')
     }
 
     agent { label 'manager-jenkins-node' }
@@ -70,13 +71,14 @@ pipeline {
                         }
                         sh "rm salt -rf && rm salt-packaging -rf"
                     }
+                    if (!params.disable_branch_check) {
+                        echo "Check that 'products:testing' and 'products:testing:debian' are not set to MU branches"
+                        sh "! curl -L https://build.opensuse.org/projects/systemsmanagement:saltstack:products:testing/packages/salt/files/_service?expand=1 | grep MU/${mu_version}"
+                        sh "! curl -L https://build.opensuse.org/projects/systemsmanagement:saltstack:products:testing:debian/packages/salt/files/_service?expand=1 | grep MU/${mu_version}"
 
-                    echo "Check that 'products:testing' and 'products:testing:debian' are not set to MU branches"
-                    sh "! curl -L https://build.opensuse.org/projects/systemsmanagement:saltstack:products:testing/packages/salt/files/_service?expand=1 | grep MU/${mu_version}"
-                    sh "! curl -L https://build.opensuse.org/projects/systemsmanagement:saltstack:products:testing:debian/packages/salt/files/_service?expand=1 | grep MU/${mu_version}"
-
-                    echo "Check the source tarball is properly named to salt_${salt_version}.orig.tar.gz in 'products:testing:debian'"
-                    sh "curl -L https://build.opensuse.org/projects/systemsmanagement:saltstack:products:testing:debian/packages/salt/files/_service?expand=0 | grep salt_${salt_version}.orig.tar.gz"
+                        echo "Check the source tarball is properly named to salt_${salt_version}.orig.tar.gz in 'products:testing:debian'"
+                        sh "curl -L https://build.opensuse.org/projects/systemsmanagement:saltstack:products:testing:debian/packages/salt/files/_service?expand=0 | grep salt_${salt_version}.orig.tar.gz"
+                    }
                 }
             }
         }
